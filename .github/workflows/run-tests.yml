@@ -68,6 +68,9 @@ jobs:
             touch -t "$timestamp" $jar
           done
 
+      - name: Check Format
+        run: sbt scalafmtCheckAll
+
       - name: Test
         run: sbt test
 

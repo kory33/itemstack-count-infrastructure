@@ -9,7 +9,7 @@ object MonadExt {
     Monad[F].tailRecM(Queue.empty[A]) { queue =>
       Monad[F].map(fa) {
         case Some(a) => Left(queue.appended(a))
-        case None => Right(queue.toList)
+        case None    => Right(queue.toList)
       }
     }
 }

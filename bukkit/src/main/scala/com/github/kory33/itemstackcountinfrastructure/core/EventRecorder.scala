@@ -39,7 +39,7 @@ object EventRecorder {
     * `flushSleep` in between.
     */
   def timeRegulated[F[_]: Temporal](
-      flushSleep: FiniteDuration
+    flushSleep: FiniteDuration
   )(recorder: EventRecorder[F]): Resource[F, EventRecorder[F]] = {
     Resource
       .eval[F, Ref[F, FiniteDuration]](Clock[F].realTime.flatMap(Ref[F].of))
@@ -90,7 +90,7 @@ object EventRecorder {
             override def record(event: ItemStackMovementEvent): F[Unit] =
               queue.offer(event)
             override def massRecord(
-                events: List[ItemStackMovementEvent]
+              events: List[ItemStackMovementEvent]
             ): F[Unit] = events.traverse(queue.offer).void
           }
         }
@@ -101,7 +101,7 @@ object EventRecorder {
     * [[SyncIO]] context.
     */
   def synchronize[F[_]](asyncRecorder: EventRecorder[F])(
-      trans: SyncIO ~> F
+    trans: SyncIO ~> F
   )(using F: GenConcurrent[F, _]): Resource[F, EventRecorder[SyncIO]] = {
     val makeQueueRef: F[Ref[SyncIO, Queue[ItemStackMovementEvent]]] =
       trans(Ref[SyncIO].of(Queue.empty[ItemStackMovementEvent]))
@@ -118,7 +118,7 @@ object EventRecorder {
           override def record(event: ItemStackMovementEvent): SyncIO[Unit] =
             queueRef.update(_.enqueue(event))
           override def massRecord(
-              events: List[ItemStackMovementEvent]
+            events: List[ItemStackMovementEvent]
           ): SyncIO[Unit] =
             queueRef.update(_.enqueueAll(events))
         }

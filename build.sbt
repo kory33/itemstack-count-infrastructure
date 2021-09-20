@@ -11,7 +11,7 @@ ThisBuild / libraryDependencies ++= Seq(
 
   // test libraries
   "org.scalactic" %% "scalactic" % "3.2.9",
-  "org.scalatest" %% "scalatest" % "3.2.9" % "test",
+  "org.scalatest" %% "scalatest" % "3.2.9" % Test
 )
 
 lazy val core = project
@@ -22,4 +22,3 @@ lazy val bukkit = project
   .dependsOn(core)
   .in(file("bukkit"))
   .settings()
-

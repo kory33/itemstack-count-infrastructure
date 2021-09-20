@@ -14,7 +14,6 @@ import cats.effect.kernel.{
 import cats.effect.std.Queue as CEQueue
 import cats.instances.queue
 import com.github.kory33.itemstackcountinfrastructure.ext.MonadExt
-import cats.~>
 
 import scala.collection.immutable.Queue
 import scala.concurrent.duration.{Duration, FiniteDuration}
@@ -101,7 +100,7 @@ object EventRecorder {
     * [[SyncIO]] context.
     */
   def synchronized[F[_]](asyncRecorder: EventRecorder[F])(
-    trans: SyncIO ~> F
+    trans: [a] => SyncIO[a] => F[a]
   )(using F: GenConcurrent[F, _]): Resource[F, EventRecorder[SyncIO]] = {
     val makeQueueRef: F[Ref[SyncIO, Queue[ItemStackMovementEvent]]] =
       trans(Ref[SyncIO].of(Queue.empty[ItemStackMovementEvent]))

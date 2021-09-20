@@ -100,7 +100,7 @@ object EventRecorder {
   /** Create a resource for a synchronized recorder that allows writing in
     * [[SyncIO]] context.
     */
-  def synchronize[F[_]](asyncRecorder: EventRecorder[F])(
+  def synchronized[F[_]](asyncRecorder: EventRecorder[F])(
     trans: SyncIO ~> F
   )(using F: GenConcurrent[F, _]): Resource[F, EventRecorder[SyncIO]] = {
     val makeQueueRef: F[Ref[SyncIO, Queue[ItemStackMovementEvent]]] =

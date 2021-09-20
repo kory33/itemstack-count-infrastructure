@@ -2,7 +2,7 @@ package com.github.kory33.itemstackcountinfrastructure.core
 
 /** Data representing a movement of some ItemStack.
   */
-enum ItemStackMovementEvent:
+enum StorageContentMovement:
   /** An addition of itemstacks into a storage.
     *
     * If `count` is positive, this event indicates that items have been
@@ -21,3 +21,10 @@ enum ItemStackMovementEvent:
     * longer present inside the block pointed by [[StorageLocation]].
     */
   case StorageDestroyed(at: StorageLocation)
+
+/** Data representing a movement of ItemStacks of the specified type.
+  */
+case class ItemStackMovementEvent(
+  stackTypeName: ItemStackTypeName,
+  movement: StorageContentMovement
+)

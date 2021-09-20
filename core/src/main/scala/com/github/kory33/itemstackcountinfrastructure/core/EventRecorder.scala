@@ -80,6 +80,7 @@ object EventRecorder {
           new EventRecorder[F] {
             override def record(event: ItemStackMovementEvent): F[Unit] =
               queue.offer(event)
+
             override def massRecord(
               events: List[ItemStackMovementEvent]
             ): F[Unit] = events.traverse(queue.offer).void
@@ -108,6 +109,7 @@ object EventRecorder {
         new EventRecorder[SyncIO] {
           override def record(event: ItemStackMovementEvent): SyncIO[Unit] =
             queueRef.update(_.enqueue(event))
+
           override def massRecord(
             events: List[ItemStackMovementEvent]
           ): SyncIO[Unit] =

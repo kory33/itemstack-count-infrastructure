@@ -2,15 +2,7 @@ package com.github.kory33.itemstackcountinfrastructure.core
 
 import cats.Monad
 import cats.effect.SyncIO
-import cats.effect.kernel.{
-  Clock,
-  GenConcurrent,
-  GenSpawn,
-  GenTemporal,
-  Ref,
-  Resource,
-  Temporal
-}
+import cats.effect.kernel._
 import cats.effect.std.Queue as CEQueue
 import cats.instances.queue
 import com.github.kory33.itemstackcountinfrastructure.ext.MonadExt

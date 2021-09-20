@@ -3,6 +3,8 @@ ThisBuild / version := "0.1.0"
 
 ThisBuild / scalaVersion := "3.0.2"
 
+ThisBuild / semanticdbEnabled := true
+
 ThisBuild / libraryDependencies ++= Seq(
   // effect libraries
   "org.typelevel" %% "cats-effect" % "3.2.2",
@@ -13,6 +15,8 @@ ThisBuild / libraryDependencies ++= Seq(
   "org.scalactic" %% "scalactic" % "3.2.9",
   "org.scalatest" %% "scalatest" % "3.2.9" % Test
 )
+
+ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.5.0"
 
 lazy val core = project
   .in(file("core"))

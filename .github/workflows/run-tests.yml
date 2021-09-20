@@ -69,7 +69,7 @@ jobs:
           done
 
       - name: Check Format
-        run: sbt scalafmtCheckAll
+        run: sbt scalafix --check && sbt scalafmtCheckAll
 
       - name: Test
         run: sbt test

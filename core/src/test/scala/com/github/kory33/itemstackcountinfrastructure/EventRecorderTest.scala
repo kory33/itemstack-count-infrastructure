@@ -82,30 +82,4 @@ class EventRecorderTest extends AnyFlatSpec with Matchers {
 
     sendAndReceive.unsafeRunSync() shouldBe testDataToSend
   }
-
-  behavior of "EventRecorder.timeRegulated"
-  it should "send everything that it has received in the correct order" in {
-    import scala.concurrent.duration.given
-
-    val sendAndReceive = for {
-      recepient <- ioRecepient
-      recorder = recorderAgainst(recepient)
-
-      // When the recorder resource goes out of scope,
-      // everything it has received must be recorded to the underlying recorder.
-      // Notice here that a write to the underlying recorder in this case
-      // semantically blocks until the content has been enqueued
-      _ <- EventRecorder
-        .timeRegulated(50.milliseconds)(recorder)
-        .use { recorder =>
-          testDataToSend.traverse(event =>
-            recorder.record(event).flatMap(_ => IO.sleep(100.microseconds))
-          )
-        }
-
-      result <- MonadExt.unfoldM(recepient.tryTake)
-    } yield result
-
-    sendAndReceive.unsafeRunSync() shouldBe testDataToSend
-  }
 }

@@ -58,7 +58,7 @@ jobs:
             ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.cache-version }}-
 
       - name: Check Format
-        run: sbt scalafix --check && sbt scalafmtCheckAll
+        run: sbt "scalafix --check; scalafmtCheckAll"
 
       - name: Test
         run: sbt test

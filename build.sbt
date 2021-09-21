@@ -31,4 +31,11 @@ lazy val infra_redis = project
 lazy val bukkit = project
   .dependsOn(core)
   .in(file("bukkit"))
-  .settings()
+  .settings(
+    resolvers ++= Seq(
+      "hub.spigotmc.org" at "https://hub.spigotmc.org/nexus/content/repositories/snapshots"
+    ),
+    libraryDependencies ++= Seq(
+      "org.spigotmc" % "spigot-api" % "1.17.1-R0.1-SNAPSHOT" % Provided
+    )
+  )

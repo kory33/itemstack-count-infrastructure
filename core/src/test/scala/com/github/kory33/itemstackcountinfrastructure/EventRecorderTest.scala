@@ -24,39 +24,24 @@ class EventRecorderTest extends AnyFlatSpec with Matchers {
 
   import cats.effect.unsafe.implicits.global
 
-  val ioRecepient: IO[Queue[IO, ItemStackMovementEvent]] =
+  type Event = Int
+
+  val ioRecepient: IO[Queue[IO, Event]] =
     Queue.unbounded
   val liftSyncIOToIO: [a] => SyncIO[a] => IO[a] = [a] =>
     (syncIO: SyncIO[a]) => syncIO.to[IO]
 
-  def recorderAgainst(
-    queue: Queue[IO, ItemStackMovementEvent]
-  ): EventRecorder[IO] = new EventRecorder[IO] {
-    override def record(event: ItemStackMovementEvent): IO[Unit] =
-      queue.offer(event)
+  def recorderAgainst(queue: Queue[IO, Event]): EventRecorder[IO, Event] =
+    new EventRecorder[IO, Event] {
+      override def record(event: Event): IO[Unit] =
+        queue.offer(event)
 
-    override def massRecord(events: List[ItemStackMovementEvent]): IO[Unit] =
-      events.traverse(queue.offer).void
-  }
+      override def massRecord(events: List[Event]): IO[Unit] =
+        events.traverse(queue.offer).void
+    }
 
-  val testDataToSend: List[ItemStackMovementEvent] = {
-    val loc1 = StorageLocation("world1", 31, 1, 5)
-    val loc2 = StorageLocation("world1", 32, 2, 2)
-
-    val list = List(
-      ItemStackMovementEvent(
-        ItemStackTypeName("item1"),
-        StorageContentMovement.StorageDestroyed(loc1)
-      ),
-      ItemStackMovementEvent(
-        ItemStackTypeName("item2"),
-        StorageContentMovement.AddedTo(loc1, 40)
-      ),
-      ItemStackMovementEvent(
-        ItemStackTypeName("item2"),
-        StorageContentMovement.BetweenStorages(loc1, loc2, 30)
-      )
-    )
+  val testDataToSend: List[Event] = {
+    val list = List(1, 3, 10, 0, 10, 1)
 
     (0 to 1000).flatMap(_ => list).toList
   }

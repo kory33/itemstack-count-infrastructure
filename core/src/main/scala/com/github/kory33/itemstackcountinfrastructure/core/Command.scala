@@ -6,9 +6,5 @@ package com.github.kory33.itemstackcountinfrastructure.core
   * persistence systems.
   */
 enum Command:
-  case SetExplicitCount(
-    at: StorageLocation,
-    stackType: ItemStackTypeName,
-    count: Int
-  )
+  case UpdateTo(record: ItemAmountRecord)
   case AbondonRecordsOn(worldName: String)

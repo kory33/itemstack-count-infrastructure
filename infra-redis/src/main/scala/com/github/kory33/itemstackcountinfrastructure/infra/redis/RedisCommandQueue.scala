@@ -3,7 +3,8 @@ package com.github.kory33.itemstackcountinfrastructure.infra.redis
 import cats.Applicative
 import com.github.kory33.itemstackcountinfrastructure.core.{
   Command,
-  CommandRecorder
+  CommandRecorder,
+  ItemAmountRecord
 }
 import com.github.kory33.itemstackcountinfrastructure.ext.ListExt
 import com.github.kory33.itemstackcountinfrastructure.util.BatchedQueue
@@ -20,15 +21,16 @@ final class RedisCommandQueue[F[_]: Applicative] private (
   import cats.implicits.given
 
   private def queueSetCountCommands(
-    commands: List[Command.SetExplicitCount]
+    commands: List[Command.UpdateTo]
   ): F[Unit] = {
-    val grouped = commands.groupBy(_.at.worldName)
+    val grouped = commands.groupBy(_.record.at.worldName)
 
     grouped.toList.traverse { case (worldName, commands) =>
       utf8Commands.hmSet(
         worldName,
-        commands.map { command =>
-          s"${command.stackType}/${command.at.x}/${command.at.y}/${command.at.z}" -> command.count.toString
+        commands.map {
+          case Command.UpdateTo(ItemAmountRecord(at, stackType, count)) =>
+            s"${stackType}/${at.x}/${at.y}/${at.z}" -> count.toString
         }.toMap
       )
     }.void
@@ -40,7 +42,7 @@ final class RedisCommandQueue[F[_]: Applicative] private (
 
   override def queue(elem: Command): F[Unit] =
     elem match {
-      case elem: Command.SetExplicitCount =>
+      case elem: Command.UpdateTo =>
         queueSetCountCommands(List(elem))
       case elem: Command.AbondonRecordsOn =>
         queueAbondonRecordsCommand(elem)
@@ -63,7 +65,7 @@ final class RedisCommandQueue[F[_]: Applicative] private (
         case _ =>
           val (newRemaining, newEffectsToRun) = List(
             ListExt
-              .spanTypeTestState[Command, Command.SetExplicitCount]
+              .spanTypeTestState[Command, Command.UpdateTo]
               .map(queueSetCountCommands),
             ListExt
               .spanTypeTestState[Command, Command.AbondonRecordsOn]

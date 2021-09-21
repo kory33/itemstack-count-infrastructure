@@ -4,7 +4,7 @@ import cats.effect.kernel.Ref
 import cats.effect.std.Queue
 import cats.effect.{IO, SyncIO}
 import com.github.kory33.itemstackcountinfrastructure.core.{
-  EventRecorder,
+  BatchedQueue,
   ItemStackMovementEvent,
   ItemStackTypeName,
   StorageContentMovement,
@@ -31,13 +31,13 @@ class EventRecorderTest extends AnyFlatSpec with Matchers {
   val liftSyncIOToIO: [a] => SyncIO[a] => IO[a] = [a] =>
     (syncIO: SyncIO[a]) => syncIO.to[IO]
 
-  def recorderAgainst(queue: Queue[IO, Event]): EventRecorder[IO, Event] =
-    new EventRecorder[IO, Event] {
-      override def record(event: Event): IO[Unit] =
-        queue.offer(event)
+  def recorderAgainst(_queue: Queue[IO, Event]): BatchedQueue[IO, Event] =
+    new BatchedQueue[IO, Event] {
+      override def queue(elem: Event): IO[Unit] =
+        _queue.offer(elem)
 
-      override def massRecord(events: List[Event]): IO[Unit] =
-        events.traverse(queue.offer).void
+      override def queueList(elems: List[Event]): IO[Unit] =
+        elems.traverse(_queue.offer).void
     }
 
   val testDataToSend: List[Event] = {
@@ -56,10 +56,10 @@ class EventRecorderTest extends AnyFlatSpec with Matchers {
       // everything it has received must be recorded to the underlying recorder.
       // Notice here that a write to the underlying recorder in this case
       // semantically blocks until the content has been enqueued
-      _ <- EventRecorder
+      _ <- BatchedQueue
         .synchronized(recorder)(liftSyncIOToIO)
         .use { recorder =>
-          liftSyncIOToIO(testDataToSend.traverse(recorder.record))
+          liftSyncIOToIO(testDataToSend.traverse(recorder.queue))
         }
 
       result <- MonadExt.unfoldM(recepient.tryTake)

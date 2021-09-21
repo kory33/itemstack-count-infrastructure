@@ -37,6 +37,12 @@ lazy val bukkit = project
       "hub.spigotmc.org" at "https://hub.spigotmc.org/nexus/content/repositories/snapshots"
     ),
     libraryDependencies ++= Seq(
+      // logging infrastructure
+      "org.slf4j" % "slf4j-jdk14" % "1.7.28",
+      "org.typelevel" %% "log4cats-slf4j" % "2.1.1",
+      "dev.profunktor" %% "redis4cats-log4cats" % "1.0.0",
+
+      // spigot dependency
       "org.spigotmc" % "spigot-api" % "1.17.1-R0.1-SNAPSHOT" % Provided
     )
   )

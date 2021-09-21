@@ -22,6 +22,14 @@ lazy val core = project
   .in(file("core"))
   .settings()
 
+lazy val infra_redis = project
+  .in(file("infra-redis"))
+  .settings(
+    libraryDependencies ++= Seq(
+      "dev.profunktor" %% "redis4cats-effects" % "1.0.0"
+    )
+  )
+
 lazy val bukkit = project
   .dependsOn(core)
   .in(file("bukkit"))

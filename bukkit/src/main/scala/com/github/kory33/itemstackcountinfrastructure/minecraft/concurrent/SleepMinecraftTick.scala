@@ -15,3 +15,9 @@ trait SleepMinecraftTick[F[_]] {
   def sleepFor(ticks: Long): F[Unit]
 
 }
+
+object SleepMinecraftTick {
+
+  def apply[F[_]](using ev: SleepMinecraftTick[F]): SleepMinecraftTick[F] = ev
+
+}

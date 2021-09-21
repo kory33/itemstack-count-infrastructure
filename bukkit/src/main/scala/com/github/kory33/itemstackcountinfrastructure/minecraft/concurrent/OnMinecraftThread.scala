@@ -9,3 +9,9 @@ trait OnMinecraftThread[F[_]] {
   def run[A](syncAction: SyncIO[A]): F[A]
 
 }
+
+object OnMinecraftThread {
+
+  def apply[F[_]](using ev: OnMinecraftThread[F]): OnMinecraftThread[F] = ev
+
+}

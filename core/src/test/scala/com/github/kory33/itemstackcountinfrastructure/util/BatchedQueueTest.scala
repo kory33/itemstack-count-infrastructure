@@ -4,9 +4,7 @@ import cats.effect.kernel.Ref
 import cats.effect.std.Queue
 import cats.effect.{IO, SyncIO}
 import com.github.kory33.itemstackcountinfrastructure.core.{
-  ItemStackMovementEvent,
   ItemStackTypeName,
-  StorageContentMovement,
   StorageLocation
 }
 import com.github.kory33.itemstackcountinfrastructure.ext.MonadExt

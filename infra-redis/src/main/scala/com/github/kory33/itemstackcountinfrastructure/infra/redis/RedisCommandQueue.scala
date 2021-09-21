@@ -16,15 +16,6 @@ final class RedisCommandQueue[F[_]] private (
 
   override def queue(elem: Command): F[Unit] =
     elem match {
-      case Command.RecordMovement(movement) =>
-        movement.movement match {
-          case StorageContentMovement.AddedTo(loc, count) =>
-            ???
-          case StorageContentMovement.BetweenStorages(fromLoc, toLoc, count) =>
-            ???
-          case StorageContentMovement.StorageDestroyed(loc) =>
-            ???
-        }
       case Command.SetExplicitCount(at, stackType, count) => ???
       case Command.AbondonRecordsOn(worldName)            => ???
     }

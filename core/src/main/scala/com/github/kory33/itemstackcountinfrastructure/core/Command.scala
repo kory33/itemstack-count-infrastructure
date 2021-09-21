@@ -6,7 +6,6 @@ package com.github.kory33.itemstackcountinfrastructure.core
   * persistence systems.
   */
 enum Command:
-  case RecordMovement(movementEvent: ItemStackMovementEvent)
   case SetExplicitCount(
     at: StorageLocation,
     stackType: ItemStackTypeName,

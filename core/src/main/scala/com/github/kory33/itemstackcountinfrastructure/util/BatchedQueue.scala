@@ -1,6 +1,6 @@
 package com.github.kory33.itemstackcountinfrastructure.util
 
-import cats.Monad
+import cats.Applicative
 import cats.effect.SyncIO
 import cats.effect.kernel.*
 import cats.effect.std.Queue as CEQueue
@@ -22,7 +22,7 @@ trait BatchedQueue[F[_], E] {
   /** Like [[queue]], but queues multiple elements and is in general more
     * efficient.
     */
-  def queueList(elems: List[E])(using F: Monad[F]): F[Unit] =
+  def queueList(elems: List[E])(using F: Applicative[F]): F[Unit] =
     elems.traverse(queue).void
 
 }
@@ -38,7 +38,7 @@ object BatchedQueue {
       override def queue(elem: E): F[Unit] =
         queueRef.update(_.enqueue(elem))
 
-      override def queueList(elems: List[E])(using F: Monad[F]): F[Unit] =
+      override def queueList(elems: List[E])(using F: Applicative[F]): F[Unit] =
         queueRef.update(_.enqueueAll(elems))
     }
 

@@ -1,7 +1,6 @@
 package com.github.kory33.itemstackcountinfrastructure.infra.redis
 
-import cats.data.{State, StateT}
-import cats.{Applicative, Functor, Monad, MonadThrow}
+import cats.Applicative
 import com.github.kory33.itemstackcountinfrastructure.core.{
   Command,
   CommandRecorder
@@ -10,6 +9,9 @@ import com.github.kory33.itemstackcountinfrastructure.ext.ListExt
 import com.github.kory33.itemstackcountinfrastructure.util.BatchedQueue
 import dev.profunktor.redis4cats.effect.MkRedis
 import dev.profunktor.redis4cats.{Redis, RedisCommands}
+
+import scala.annotation.tailrec
+import scala.collection.immutable.Queue
 
 final class RedisCommandQueue[F[_]: Applicative] private (
   utf8Commands: RedisCommands[F, String, String]
@@ -49,21 +51,30 @@ final class RedisCommandQueue[F[_]: Applicative] private (
     * [[SetExplicitCount]] is combined into a single invocation of
     * [[queueSetCountCommands]]
     */
-  override def queueList(elems: List[Command])(using F: Monad[F]): F[Unit] = {
-    val effect = F.iterateWhileM(elems) { list =>
-      val (remainingList, effectsToRun) = List(
-        ListExt
-          .spanTypeTestState[Command, Command.SetExplicitCount]
-          .map(queueSetCountCommands),
-        ListExt
-          .spanTypeTestState[Command, Command.AbondonRecordsOn]
-          .map(_.traverse(queueAbondonRecordsCommand).void)
-      ).sequence.run(list).value
+  override def queueList(
+    elems: List[Command]
+  )(using F: Applicative[F]): F[Unit] = {
+    @tailrec def plan(
+      remainingCommands: List[Command],
+      effectsToRun: Queue[F[Unit]]
+    ): Queue[F[Unit]] = {
+      remainingCommands match {
+        case Nil => effectsToRun
+        case _ =>
+          val (newRemaining, newEffectsToRun) = List(
+            ListExt
+              .spanTypeTestState[Command, Command.SetExplicitCount]
+              .map(queueSetCountCommands),
+            ListExt
+              .spanTypeTestState[Command, Command.AbondonRecordsOn]
+              .map(_.traverse(queueAbondonRecordsCommand).void)
+          ).sequence.run(remainingCommands).value
 
-      effectsToRun.sequence.as(remainingList)
-    }(_.nonEmpty)
+          plan(remainingCommands, effectsToRun.enqueueAll(newEffectsToRun))
+      }
+    }
 
-    effect.void
+    plan(elems, Queue.empty).sequence.void
   }
 
 }
@@ -77,7 +88,7 @@ object RedisCommandQueue {
     * [[dev.profunktor.redis4cats.algebra.Auth]] should be performed before this
     * [[BatchedQueue]] is ready to use.
     */
-  def apply[F[_]: Functor](
+  def apply[F[_]: Applicative](
     utf8Commands: RedisCommands[F, String, String]
   ): BatchedQueue[F, Command] = RedisCommandQueue[F](utf8Commands)
 

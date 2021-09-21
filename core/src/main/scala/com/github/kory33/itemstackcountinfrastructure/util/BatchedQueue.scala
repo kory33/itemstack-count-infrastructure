@@ -1,11 +1,12 @@
-package com.github.kory33.itemstackcountinfrastructure.core
+package com.github.kory33.itemstackcountinfrastructure.util
 
 import cats.Monad
 import cats.effect.SyncIO
-import cats.effect.kernel._
+import cats.effect.kernel.*
 import cats.effect.std.Queue as CEQueue
 import cats.instances.queue
 import com.github.kory33.itemstackcountinfrastructure.ext.MonadExt
+import com.github.kory33.itemstackcountinfrastructure.util.BatchedQueue
 
 import scala.collection.immutable.Queue
 import scala.concurrent.duration.{Duration, FiniteDuration}

@@ -1,16 +1,16 @@
-package com.github.kory33.itemstackcountinfrastructure
+package com.github.kory33.itemstackcountinfrastructure.util
 
 import cats.effect.kernel.Ref
 import cats.effect.std.Queue
 import cats.effect.{IO, SyncIO}
 import com.github.kory33.itemstackcountinfrastructure.core.{
-  BatchedQueue,
   ItemStackMovementEvent,
   ItemStackTypeName,
   StorageContentMovement,
   StorageLocation
 }
 import com.github.kory33.itemstackcountinfrastructure.ext.MonadExt
+import com.github.kory33.itemstackcountinfrastructure.util.BatchedQueue
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
@@ -18,11 +18,10 @@ import java.util.concurrent.TimeUnit
 import scala.compiletime.ops.int.S
 import scala.concurrent.duration.FiniteDuration
 
-class EventRecorderTest extends AnyFlatSpec with Matchers {
-
-  import cats.implicits.given
+class BatchedQueueTest extends AnyFlatSpec with Matchers {
 
   import cats.effect.unsafe.implicits.global
+  import cats.implicits.given
 
   type Event = Int
 

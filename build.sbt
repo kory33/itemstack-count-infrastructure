@@ -21,6 +21,7 @@ lazy val core = project
   .settings()
 
 lazy val infra_redis = project
+  .dependsOn(core)
   .in(file("infra-redis"))
   .settings(
     libraryDependencies ++= Seq(
@@ -29,7 +30,7 @@ lazy val infra_redis = project
   )
 
 lazy val bukkit = project
-  .dependsOn(core)
+  .dependsOn(core, infra_redis)
   .in(file("bukkit"))
   .settings(
     resolvers ++= Seq(

@@ -17,10 +17,13 @@ trait BatchedQueue[F[_], E] {
     */
   def queue(elem: E): F[Unit]
 
+  import cats.implicits.given
+
   /** Like [[queue]], but queues multiple elements and is in general more
     * efficient.
     */
-  def queueList(elems: List[E]): F[Unit]
+  def queueList(elems: List[E])(using F: Monad[F]): F[Unit] =
+    elems.traverse(queue).void
 
 }
 
@@ -35,14 +38,14 @@ object BatchedQueue {
       override def queue(elem: E): F[Unit] =
         queueRef.update(_.enqueue(elem))
 
-      override def queueList(elems: List[E]): F[Unit] =
+      override def queueList(elems: List[E])(using F: Monad[F]): F[Unit] =
         queueRef.update(_.enqueueAll(elems))
     }
 
   /** Create a resource for a synchronized queue that allows writing in
     * [[SyncIO]] context.
     */
-  def synchronized[F[_], E](asyncRecorder: BatchedQueue[F, E])(
+  def synchronized[F[_], E](asyncQueue: BatchedQueue[F, E])(
     trans: [a] => SyncIO[a] => F[a]
   )(using F: GenConcurrent[F, _]): Resource[F, BatchedQueue[SyncIO, E]] = {
     val makeQueueRef: F[Ref[SyncIO, Queue[E]]] =
@@ -52,7 +55,7 @@ object BatchedQueue {
       .make(makeQueueRef) { queue =>
         for {
           remaining <- trans.apply(queue.get)
-          _ <- asyncRecorder.queueList(remaining.toList)
+          _ <- asyncQueue.queueList(remaining.toList)
         } yield ()
       }
       .map(queueRefRecorder[SyncIO, E])

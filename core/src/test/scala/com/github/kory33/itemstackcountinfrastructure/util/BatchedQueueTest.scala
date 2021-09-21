@@ -30,14 +30,8 @@ class BatchedQueueTest extends AnyFlatSpec with Matchers {
   val liftSyncIOToIO: [a] => SyncIO[a] => IO[a] = [a] =>
     (syncIO: SyncIO[a]) => syncIO.to[IO]
 
-  def recorderAgainst(_queue: Queue[IO, Event]): BatchedQueue[IO, Event] =
-    new BatchedQueue[IO, Event] {
-      override def queue(elem: Event): IO[Unit] =
-        _queue.offer(elem)
-
-      override def queueList(elems: List[Event]): IO[Unit] =
-        elems.traverse(_queue.offer).void
-    }
+  def wrapQueue(queue: Queue[IO, Event]): BatchedQueue[IO, Event] =
+    queue.offer(_)
 
   val testDataToSend: List[Event] = {
     val list = List(1, 3, 10, 0, 10, 1)
@@ -49,14 +43,14 @@ class BatchedQueueTest extends AnyFlatSpec with Matchers {
   it should "send everything that it has received in the correct order" in {
     val sendAndReceive = for {
       recepient <- ioRecepient
-      recorder = recorderAgainst(recepient)
+      queue = wrapQueue(recepient)
 
       // When the recorder resource goes out of scope,
       // everything it has received must be recorded to the underlying recorder.
       // Notice here that a write to the underlying recorder in this case
       // semantically blocks until the content has been enqueued
       _ <- BatchedQueue
-        .synchronized(recorder)(liftSyncIOToIO)
+        .synchronized(queue)(liftSyncIOToIO)
         .use { recorder =>
           liftSyncIOToIO(testDataToSend.traverse(recorder.queue))
         }

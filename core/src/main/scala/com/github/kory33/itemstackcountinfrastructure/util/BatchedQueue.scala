@@ -26,38 +26,3 @@ trait BatchedQueue[F[_], E] {
     elems.traverse(queue).void
 
 }
-
-object BatchedQueue {
-
-  import cats.implicits.given
-
-  def queueRefRecorder[F[_], E](
-    queueRef: Ref[F, Queue[E]]
-  ): BatchedQueue[F, E] =
-    new BatchedQueue[F, E] {
-      override def queue(elem: E): F[Unit] =
-        queueRef.update(_.enqueue(elem))
-
-      override def queueList(elems: List[E])(using F: Applicative[F]): F[Unit] =
-        queueRef.update(_.enqueueAll(elems))
-    }
-
-  /** Create a resource for a synchronized queue that allows writing in
-    * [[SyncIO]] context.
-    */
-  def synchronized[F[_], E](asyncQueue: BatchedQueue[F, E])(
-    trans: [a] => SyncIO[a] => F[a]
-  )(using F: GenConcurrent[F, _]): Resource[F, BatchedQueue[SyncIO, E]] = {
-    val makeQueueRef: F[Ref[SyncIO, Queue[E]]] =
-      trans(Ref[SyncIO].of(Queue.empty[E]))
-
-    Resource
-      .make(makeQueueRef) { queue =>
-        for {
-          remaining <- trans.apply(queue.get)
-          _ <- asyncQueue.queueList(remaining.toList)
-        } yield ()
-      }
-      .map(queueRefRecorder[SyncIO, E])
-  }
-}

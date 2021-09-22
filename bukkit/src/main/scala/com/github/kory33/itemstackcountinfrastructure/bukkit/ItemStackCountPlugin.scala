@@ -9,6 +9,7 @@ import com.github.kory33.itemstackcountinfrastructure.bukkit.concurrent.{
 import com.github.kory33.itemstackcountinfrastructure.bukkit.config.PluginConfig
 import com.github.kory33.itemstackcountinfrastructure.bukkit.inspection.algebra.InspectBukkitWorld
 import com.github.kory33.itemstackcountinfrastructure.bukkit.logging.Log4CatsLoggerOnPlugin
+import com.github.kory33.itemstackcountinfrastructure.core.algebra.InspectStorages
 import com.github.kory33.itemstackcountinfrastructure.core.{CommandRecorder, InspectionTargets}
 import com.github.kory33.itemstackcountinfrastructure.infra.redis.RedisCommandQueue
 import com.github.kory33.itemstackcountinfrastructure.minecraft.concurrent.{
@@ -16,7 +17,6 @@ import com.github.kory33.itemstackcountinfrastructure.minecraft.concurrent.{
   SleepMinecraftTick
 }
 import com.github.kory33.itemstackcountinfrastructure.minecraft.plugin.inspection.InspectionProcess
-import com.github.kory33.itemstackcountinfrastructure.core.algebra.InspectStorages
 import org.bukkit.Bukkit
 import org.bukkit.event.HandlerList
 import org.bukkit.plugin.java.JavaPlugin

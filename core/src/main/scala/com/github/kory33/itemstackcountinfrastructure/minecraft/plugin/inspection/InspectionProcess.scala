@@ -3,6 +3,7 @@ package com.github.kory33.itemstackcountinfrastructure.minecraft.plugin.inspecti
 import cats.Monad
 import cats.effect.SyncIO
 import cats.effect.kernel.*
+import com.github.kory33.itemstackcountinfrastructure.core.algebra.InspectStorages
 import com.github.kory33.itemstackcountinfrastructure.core.{
   Command,
   CommandRecorder,
@@ -13,7 +14,6 @@ import com.github.kory33.itemstackcountinfrastructure.minecraft.concurrent.{
   OnMinecraftThread,
   SleepMinecraftTick
 }
-import com.github.kory33.itemstackcountinfrastructure.core.algebra.InspectStorages
 import com.github.kory33.itemstackcountinfrastructure.util.BatchedQueue
 
 /**

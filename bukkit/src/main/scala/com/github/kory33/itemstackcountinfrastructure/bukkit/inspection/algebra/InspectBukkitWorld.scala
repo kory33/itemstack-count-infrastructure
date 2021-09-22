@@ -3,17 +3,9 @@ package com.github.kory33.itemstackcountinfrastructure.bukkit.inspection.algebra
 import cats.Functor
 import cats.effect.SyncIO
 import com.github.kory33.itemstackcountinfrastructure.core
-import com.github.kory33.itemstackcountinfrastructure.core.{
-  InspectionResult,
-  InspectionTargets,
-  ItemAmounts,
-  ItemAmountsAtLocation,
-  ItemStackTypeName,
-  LocationInspectionResult,
-  StorageLocation
-}
-import com.github.kory33.itemstackcountinfrastructure.minecraft.concurrent.OnMinecraftThread
+import com.github.kory33.itemstackcountinfrastructure.core._
 import com.github.kory33.itemstackcountinfrastructure.core.algebra.InspectStorages
+import com.github.kory33.itemstackcountinfrastructure.minecraft.concurrent.OnMinecraftThread
 import org.bukkit.inventory.{Inventory, ItemStack}
 import org.bukkit.{Bukkit, Location}
 

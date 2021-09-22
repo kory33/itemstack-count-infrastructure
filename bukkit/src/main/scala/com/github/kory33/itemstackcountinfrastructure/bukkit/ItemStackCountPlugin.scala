@@ -1,7 +1,11 @@
 package com.github.kory33.itemstackcountinfrastructure.bukkit
 
-import cats.effect.kernel.Ref
+import cats.effect.kernel.{Ref, Resource, Sync}
 import cats.effect.{IO, SyncIO}
+import com.github.kory33.itemstackcountinfrastructure.bukkit.algebra.{
+  GetLoadedBukkitStorageLocations,
+  GetLoadedStorageLocations
+}
 import com.github.kory33.itemstackcountinfrastructure.bukkit.concurrent.{
   OnBukkitThread,
   SleepBukkitTick
@@ -18,12 +22,21 @@ import com.github.kory33.itemstackcountinfrastructure.minecraft.concurrent.{
 }
 import com.github.kory33.itemstackcountinfrastructure.minecraft.plugin.inspection.InspectionProcess
 import org.bukkit.Bukkit
-import org.bukkit.event.HandlerList
+import org.bukkit.event.{HandlerList, Listener}
 import org.bukkit.plugin.java.JavaPlugin
 import org.typelevel.log4cats.Logger
 
 private val liftSyncIO: [a] => SyncIO[a] => IO[a] =
   [a] => (syncIO: SyncIO[a]) => syncIO.to[IO]
+
+private def listenerResource[F[_]](plugin: JavaPlugin, listener: Listener)(
+  using F: Sync[F]
+): Resource[F, Listener] = {
+  val acquire =
+    F.as(F.delay(Bukkit.getServer.getPluginManager.registerEvents(listener, plugin)), listener)
+
+  Resource.make(acquire)(listener => F.delay(HandlerList.unregisterAll(listener)))
+}
 
 class ItemStackCountPlugin extends JavaPlugin {
 
@@ -41,37 +54,46 @@ class ItemStackCountPlugin extends JavaPlugin {
   private given inspectBukkitWorld: InspectStorages[IO] =
     InspectBukkitWorld[IO]
 
-  private var pluginResource: Option[(Ref[IO, InspectionTargets], IO[Unit])] =
+  private given getLoadedBukkitStorageLocations: GetLoadedStorageLocations[IO] =
+    GetLoadedBukkitStorageLocations[IO]
+
+  private var resourceFinalizer: Option[IO[Unit]] =
     None
 
   override def onEnable(): Unit = {
+    val (_, finalizer) = {
+      for {
+        connection <- PluginConfig
+          .loadFrom(this)
+          .readRedisConnectionConfig
+          .utf8ConnectionResource[IO]
 
-    val (allocatedRef, finalizer) = PluginConfig
-      .loadFrom(this)
-      .readRedisConnectionConfig
-      .utf8ConnectionResource[IO]
-      .map(RedisCommandQueue.apply)
-      .map(CommandRecorder.apply)
-      .flatMap(InspectionProcess[IO])
-      .map(_.targets)
-      .allocated // leak resource because resource lifetime extends to plugin's onDisable
+        recorder = CommandRecorder(RedisCommandQueue(connection))
+
+        inspectionProcess <- InspectionProcess(recorder)
+
+        _ <- listenerResource[IO](
+          this,
+          listeners.ContainerBlockMarker(inspectionProcess.targets)
+        )
+        _ <- Resource.eval(IO {
+          this
+            .getCommand("iscount")
+            .setExecutor(command.ItemStackCountCommand(inspectionProcess.targets, recorder))
+        })
+      } yield ()
+    }
+      // leak resource because resource lifetime extends to plugin's onDisable
+      .allocated
       .unsafeRunSync()
 
-    Bukkit
-      .getServer
-      .getPluginManager
-      .registerEvents(listeners.ContainerBlockMarker(allocatedRef), this)
-
-    pluginResource = Some((allocatedRef, finalizer))
+    resourceFinalizer = Some(finalizer)
   }
 
   override def onDisable(): Unit = {
-    HandlerList.unregisterAll(this)
-
-    pluginResource match {
-      case Some((_, resourceFinalizer)) =>
-        resourceFinalizer.unsafeRunSync()
-      case None =>
+    resourceFinalizer match {
+      case Some(resourceFinalizer) => resourceFinalizer.unsafeRunSync()
+      case None                    =>
     }
   }
 }

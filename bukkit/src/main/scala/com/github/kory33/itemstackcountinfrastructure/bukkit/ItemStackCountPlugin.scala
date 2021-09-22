@@ -43,7 +43,7 @@ class ItemStackCountPlugin extends JavaPlugin {
   private given inspectBukkitWorld: InspectConcreteLocation[IO] =
     InspectBukkitWorld[IO]
 
-  private var dataSinkResource: Option[(Ref[IO, InspectionTargets], IO[Unit])] =
+  private var pluginResource: Option[(Ref[IO, InspectionTargets], IO[Unit])] =
     None
 
   override def onEnable(): Unit = {
@@ -63,13 +63,13 @@ class ItemStackCountPlugin extends JavaPlugin {
       .getPluginManager
       .registerEvents(listeners.ContainerBlockMarker(allocatedRef), this)
 
-    dataSinkResource = Some((allocatedRef, finalizer))
+    pluginResource = Some((allocatedRef, finalizer))
   }
 
   override def onDisable(): Unit = {
     HandlerList.unregisterAll(this)
 
-    dataSinkResource match {
+    pluginResource match {
       case Some((_, resourceFinalizer)) =>
         resourceFinalizer.unsafeRunSync()
       case None =>

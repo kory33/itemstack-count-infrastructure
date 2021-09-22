@@ -25,3 +25,22 @@ case class InspectionResult(results: Map[StorageLocation, LocationInspectionResu
     }
 
 }
+
+/**
+ * Set of locations of storages to be inspected eventually.
+ */
+case class InspectionTargets(targets: Set[StorageLocation]) {
+
+  def addTarget(location: StorageLocation): InspectionTargets =
+    this.copy(targets = targets.incl(location))
+
+  def addTargets(_targets: StorageLocation*): InspectionTargets =
+    this.copy(targets = targets.concat(_targets))
+
+}
+
+object InspectionTargets {
+
+  val empty: InspectionTargets = InspectionTargets(Set.empty)
+
+}

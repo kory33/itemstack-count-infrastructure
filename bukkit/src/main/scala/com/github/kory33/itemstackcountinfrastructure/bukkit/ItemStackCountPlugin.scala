@@ -12,19 +12,19 @@ import com.github.kory33.itemstackcountinfrastructure.bukkit.concurrent.{
 }
 import com.github.kory33.itemstackcountinfrastructure.bukkit.config.PluginConfig
 import com.github.kory33.itemstackcountinfrastructure.bukkit.inspection.algebra.InspectBukkitWorld
-import com.github.kory33.itemstackcountinfrastructure.bukkit.logging.Log4CatsLoggerOnPlugin
 import com.github.kory33.itemstackcountinfrastructure.core.algebra.InspectStorages
 import com.github.kory33.itemstackcountinfrastructure.core.{CommandRecorder, InspectionTargets}
-import com.github.kory33.itemstackcountinfrastructure.infra.redis.RedisCommandQueue
+import com.github.kory33.itemstackcountinfrastructure.infra.mysql.MysqlCommandRecorder
 import com.github.kory33.itemstackcountinfrastructure.minecraft.concurrent.{
   OnMinecraftThread,
   SleepMinecraftTick
 }
 import com.github.kory33.itemstackcountinfrastructure.minecraft.plugin.inspection.InspectionProcess
+import doobie.util.transactor
+import doobie.util.transactor.Transactor
 import org.bukkit.Bukkit
 import org.bukkit.event.{HandlerList, Listener}
 import org.bukkit.plugin.java.JavaPlugin
-import org.typelevel.log4cats.Logger
 
 private val liftSyncIO: [a] => SyncIO[a] => IO[a] =
   [a] => (syncIO: SyncIO[a]) => syncIO.to[IO]
@@ -41,10 +41,6 @@ private def listenerResource[F[_]](plugin: JavaPlugin, listener: Listener)(
 class ItemStackCountPlugin extends JavaPlugin {
 
   import cats.effect.unsafe.implicits.global
-  import dev.profunktor.redis4cats.log4cats.given
-
-  private given logger: Logger[IO] =
-    Log4CatsLoggerOnPlugin[IO](this)
 
   private given onBukkitThread: OnMinecraftThread[IO] = OnBukkitThread[IO](this)
 
@@ -62,13 +58,11 @@ class ItemStackCountPlugin extends JavaPlugin {
 
   override def onEnable(): Unit = {
     val (_, finalizer) = {
-      for {
-        connection <- PluginConfig
-          .loadFrom(this)
-          .readRedisConnectionConfig
-          .utf8ConnectionResource[IO]
+      given transactor: Transactor[IO] =
+        PluginConfig.loadFrom(this).mysqlConnectionConfig.transactor[IO]
 
-        recorder = CommandRecorder(RedisCommandQueue(connection))
+      for {
+        recorder <- Resource.eval(MysqlCommandRecorder[IO])
 
         inspectionProcess <- InspectionProcess(recorder)
 

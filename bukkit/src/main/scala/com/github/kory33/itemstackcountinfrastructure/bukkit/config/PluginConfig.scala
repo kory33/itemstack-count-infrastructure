@@ -14,15 +14,13 @@ object PluginConfig {
 
 class PluginConfig private (val config: FileConfiguration) {
 
-  def readRedisConnectionConfig: RedisConnectionConfig = {
-    val section = config.getConfigurationSection("redis")
+  def mysqlConnectionConfig: MysqlConnectionConfig = {
+    val section = config.getConfigurationSection("mysql")
 
-    RedisConnectionConfig(
-      host = section.getString("host"),
-      port = section.getInt("port"),
-      password =
-        if (section.contains("password")) then Some(section.getString("password"))
-        else None
+    MysqlConnectionConfig(
+      mysqlUrl = section.getString("url"),
+      username = section.getString("username"),
+      password = section.getString("password")
     )
   }
 

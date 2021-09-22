@@ -3,7 +3,7 @@ package com.github.kory33.itemstackcountinfrastructure.bukkit.listeners
 import cats.effect.IO
 import cats.effect.kernel.Ref
 import com.github.kory33.itemstackcountinfrastructure.bukkit.adapter.StorageLocationFromBukkit
-import com.github.kory33.itemstackcountinfrastructure.minecraft.plugin.inspection.InspectionTargets
+import com.github.kory33.itemstackcountinfrastructure.core.InspectionTargets
 import org.bukkit.block.{Block, Container}
 import org.bukkit.event.block.{BlockBreakEvent, BlockPlaceEvent}
 import org.bukkit.event.inventory.{

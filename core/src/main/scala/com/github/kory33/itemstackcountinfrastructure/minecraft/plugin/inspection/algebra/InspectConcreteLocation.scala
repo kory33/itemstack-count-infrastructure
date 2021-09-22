@@ -1,11 +1,8 @@
 package com.github.kory33.itemstackcountinfrastructure.minecraft.plugin.inspection.algebra
 
 import cats.Functor
+import com.github.kory33.itemstackcountinfrastructure.core.{InspectionResult, InspectionTargets}
 import com.github.kory33.itemstackcountinfrastructure.minecraft.concurrent.OnMinecraftThread
-import com.github.kory33.itemstackcountinfrastructure.minecraft.plugin.inspection.{
-  InspectionResult,
-  InspectionTargets
-}
 
 trait InspectConcreteLocation[F[_]] {
 

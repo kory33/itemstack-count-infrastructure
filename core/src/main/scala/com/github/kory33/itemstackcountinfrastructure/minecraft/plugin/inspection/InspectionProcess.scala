@@ -3,7 +3,11 @@ package com.github.kory33.itemstackcountinfrastructure.minecraft.plugin.inspecti
 import cats.Monad
 import cats.effect.SyncIO
 import cats.effect.kernel.*
-import com.github.kory33.itemstackcountinfrastructure.core.{Command, StorageLocation}
+import com.github.kory33.itemstackcountinfrastructure.core.{
+  Command,
+  InspectionTargets,
+  StorageLocation
+}
 import com.github.kory33.itemstackcountinfrastructure.minecraft.concurrent.{
   OnMinecraftThread,
   SleepMinecraftTick

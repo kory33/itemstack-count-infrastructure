@@ -9,15 +9,13 @@ import com.github.kory33.itemstackcountinfrastructure.bukkit.concurrent.{
 import com.github.kory33.itemstackcountinfrastructure.bukkit.config.PluginConfig
 import com.github.kory33.itemstackcountinfrastructure.bukkit.inspection.algebra.InspectBukkitWorld
 import com.github.kory33.itemstackcountinfrastructure.bukkit.logging.Log4CatsLoggerOnPlugin
+import com.github.kory33.itemstackcountinfrastructure.core.InspectionTargets
 import com.github.kory33.itemstackcountinfrastructure.infra.redis.RedisCommandQueue
 import com.github.kory33.itemstackcountinfrastructure.minecraft.concurrent.{
   OnMinecraftThread,
   SleepMinecraftTick
 }
-import com.github.kory33.itemstackcountinfrastructure.minecraft.plugin.inspection.{
-  InspectionProcess,
-  InspectionTargets
-}
+import com.github.kory33.itemstackcountinfrastructure.minecraft.plugin.inspection.InspectionProcess
 import com.github.kory33.itemstackcountinfrastructure.minecraft.plugin.inspection.algebra.InspectConcreteLocation
 import org.bukkit.Bukkit
 import org.bukkit.event.HandlerList

@@ -2,19 +2,18 @@ package com.github.kory33.itemstackcountinfrastructure.bukkit.inspection.algebra
 
 import cats.Functor
 import cats.effect.SyncIO
+import com.github.kory33.itemstackcountinfrastructure.core
 import com.github.kory33.itemstackcountinfrastructure.core.{
+  InspectionResult,
+  InspectionTargets,
   ItemAmounts,
   ItemAmountsAtLocation,
   ItemStackTypeName,
+  LocationInspectionResult,
   StorageLocation
 }
 import com.github.kory33.itemstackcountinfrastructure.minecraft.concurrent.OnMinecraftThread
 import com.github.kory33.itemstackcountinfrastructure.minecraft.plugin.inspection.algebra.InspectConcreteLocation
-import com.github.kory33.itemstackcountinfrastructure.minecraft.plugin.inspection.{
-  InspectionResult,
-  InspectionTargets,
-  LocationInspectionResult
-}
 import org.bukkit.inventory.{Inventory, ItemStack}
 import org.bukkit.{Bukkit, Location}
 
@@ -46,7 +45,7 @@ object InspectBukkitWorld {
           })
 
         Functor[F].map(inspectOnMainThread) { list =>
-          InspectionResult {
+          core.InspectionResult {
             val resultList: Seq[(StorageLocation, LocationInspectionResult)] = for {
               (location, inventoryOption) <- list
             } yield {

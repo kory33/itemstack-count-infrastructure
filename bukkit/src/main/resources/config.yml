@@ -1,0 +1,5 @@
+redis:
+  host: localhost
+  port: 6379
+  # uncomment the following line to enable password authentication
+  # password:

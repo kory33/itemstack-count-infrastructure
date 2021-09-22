@@ -1,0 +1,14 @@
+name: @name@
+main: com.github.kory33.itemstackcountinfrastructure.bukkit.ItemStackCountPlugin
+version: @version@
+
+commands:
+  iscount:
+    description: Command to manipulate ISCount system.
+    permission: iscount.command
+    permission-message: Permission denied.
+    usage: "/iscount (drop-records [world_names...])|recount-all-loaded-tile-entities"
+
+permissions:
+  iscount.command:
+    default: op

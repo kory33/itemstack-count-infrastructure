@@ -20,7 +20,7 @@ import doobie.util.transactor.Transactor
 import scala.annotation.tailrec
 import scala.collection.immutable.Queue
 
-object MysqlCommandQueue {
+object MysqlCommandRecorder {
 
   import cats.implicits.given
   import doobie.implicits.given

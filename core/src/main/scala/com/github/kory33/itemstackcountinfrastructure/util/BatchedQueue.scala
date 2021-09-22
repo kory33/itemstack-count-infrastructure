@@ -26,4 +26,18 @@ trait BatchedQueue[F[_], E] {
   def queueList(elems: List[E])(using F: Applicative[F]): F[Unit] =
     elems.traverse(queue).void
 
+  /**
+   * Construct a [[BatchedQueue]] in which only [[E]]s matching the condition `pred` is queued.
+   */
+  def filtered(pred: E => Boolean)(using _F: Applicative[F]): BatchedQueue[F, E] =
+    new BatchedQueue[F, E] {
+
+      override def queue(elem: E): F[Unit] =
+        if pred(elem) then BatchedQueue.this.queue(elem) else _F.unit
+
+      override def queueList(elems: List[E])(using F: Applicative[F]): F[Unit] =
+        BatchedQueue.this.queueList(elems.filter(pred))
+
+    }
+
 }

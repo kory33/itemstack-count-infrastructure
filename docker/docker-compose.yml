@@ -1,0 +1,14 @@
+version: "3.8"
+
+services:
+  paper:
+    image: ghcr.io/sksat/papermc-docker:1.17.1
+
+    stdin_open: true
+    ports:
+      - 25565:25565
+    environment:
+      JAVA_TOOL_OPTIONS: "-Xms1G -Xmx1G"
+    volumes:
+      - ./data:/app
+      - ../bukkit/target/build/itemstack-count.jar:/app/plugins/itemstack-count.jar:ro

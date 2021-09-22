@@ -12,7 +12,7 @@ object ListExt {
      *
      * @example
      * {{{
-     * List(Some(1), Some(2), None, None, Some(5)) == (List(1, 2), List(None, None, Some(5))
+     * List(Some(1), Some(2), None, None, Some(5)).spanOption(identity) == (List(1, 2), List(None, None, Some(5))
      * }}}
      */
     def spanOption[B](f: A => Option[B]): (List[B], List[A]) = {

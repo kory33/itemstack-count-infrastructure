@@ -58,11 +58,14 @@ object CommandRecorder {
                   .spanTypeTestState[Command, Command.ReportAmount]
                   .map(queueReportAmountCommands),
                 ListExt
+                  .spanTypeTestState[Command, Command.ReportNonExistence]
+                  .map(_.traverse(queueReportNonExistenceCommand).void),
+                ListExt
                   .spanTypeTestState[Command, Command.DropRecordsOn]
                   .map(_.traverse(queueDropRecordsCommand).void)
               ).sequence.run(remainingCommands).value
 
-              plan(remainingCommands, effectsToRun.enqueueAll(newEffectsToRun))
+              plan(newRemaining, effectsToRun.enqueueAll(newEffectsToRun))
           }
         }
 

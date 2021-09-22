@@ -1,4 +1,6 @@
-ThisBuild / name := "itemstack-count-infrastructure"
+import sbt.Compile
+import sbt.Keys.baseDirectory
+
 ThisBuild / version := "0.1.0"
 
 ThisBuild / scalaVersion := "3.0.2"
@@ -18,31 +20,56 @@ ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports"
 
 lazy val core = project
   .in(file("core"))
+  .settings(moduleName := "itemstack-count-infrastructure-core")
   .settings()
 
 lazy val infra_redis = project
   .dependsOn(core)
   .in(file("infra-redis"))
-  .settings(
-    libraryDependencies ++= Seq(
-      "dev.profunktor" %% "redis4cats-effects" % "1.0.0"
-    )
-  )
+  .settings(moduleName := "itemstack-count-infrastructure-infra-redis")
+  .settings(libraryDependencies ++= Seq("dev.profunktor" %% "redis4cats-effects" % "1.0.0"))
 
-lazy val bukkit = project
-  .dependsOn(core, infra_redis)
-  .in(file("bukkit"))
-  .settings(
-    resolvers ++= Seq(
-      "hub.spigotmc.org" at "https://hub.spigotmc.org/nexus/content/repositories/snapshots"
-    ),
-    libraryDependencies ++= Seq(
-      // logging infrastructure
-      "org.slf4j" % "slf4j-jdk14" % "1.7.28",
-      "org.typelevel" %% "log4cats-slf4j" % "2.1.1",
-      "dev.profunktor" %% "redis4cats-log4cats" % "1.0.0",
+// region token replacement settings keys
 
-      // spigot dependency
-      "org.spigotmc" % "spigot-api" % "1.17.1-R0.1-SNAPSHOT" % Provided
+val tokenReplacementMap =
+  settingKey[Map[String, String]]("Map specifying what tokens should be replaced to")
+
+val filteredResourceGenerator = taskKey[Seq[File]]("Resource generator to filter resources")
+
+// endregion
+
+val filesToBeReplacedInResourceFolder = Seq("plugin.yml")
+
+lazy val bukkit = {
+  project
+    .dependsOn(core, infra_redis)
+    .in(file("bukkit"))
+    .settings(moduleName := "itemstack-count-infrastructure-bukkit")
+    .settings(
+      resolvers ++= Seq(
+        "hub.spigotmc.org" at "https://hub.spigotmc.org/nexus/content/repositories/snapshots"
+      ),
+      libraryDependencies ++= Seq(
+        // logging infrastructure
+        "org.slf4j" % "slf4j-jdk14" % "1.7.28",
+        "org.typelevel" %% "log4cats-slf4j" % "2.1.1",
+        "dev.profunktor" %% "redis4cats-log4cats" % "1.0.0",
+
+        // spigot dependency
+        "org.spigotmc" % "spigot-api" % "1.17.1-R0.1-SNAPSHOT" % Provided
+      ),
+      Compile / filteredResourceGenerator :=
+        ResourceFilter.filterResources(
+          filesToBeReplacedInResourceFolder,
+          Map("name" -> moduleName.value, "version" -> version.value),
+          (Compile / resourceManaged).value,
+          (Compile / resourceDirectory).value
+        ),
+      Compile / resourceGenerators += (Compile / filteredResourceGenerator),
+      Compile / unmanagedResources += baseDirectory.value / "LICENSE.txt",
+      // トークン置換を行ったファイルをunmanagedResourcesのコピーから除外する
+      Compile / unmanagedResources / excludeFilter :=
+        filesToBeReplacedInResourceFolder
+          .foldLeft((unmanagedResources / excludeFilter).value)(_ || _)
     )
-  )
+}

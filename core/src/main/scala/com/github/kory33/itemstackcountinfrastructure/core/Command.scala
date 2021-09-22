@@ -7,5 +7,6 @@ package com.github.kory33.itemstackcountinfrastructure.core
  * systems.
  */
 enum Command:
-  case UpdateTo(record: ItemAmountRecord)
-  case AbondonRecordsOn(worldName: String)
+  case ReportAmount(record: ItemAmountsAtLocation)
+  case ReportNonExistence(at: StorageLocation)
+  case DropRecordsOn(worldName: String)

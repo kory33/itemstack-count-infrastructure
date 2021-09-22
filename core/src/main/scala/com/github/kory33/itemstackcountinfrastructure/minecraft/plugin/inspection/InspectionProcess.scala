@@ -22,7 +22,7 @@ object InspectionProcess {
   )(inspectionTargets: InspectionTargets): F[Unit] =
     for {
       result <- InspectConcreteLocation[F](inspectionTargets)
-      _ <- batchedQueue.queueList(result.results.map(Command.UpdateTo.apply))
+      _ <- batchedQueue.queueList(result.toCommandsToRecord)
     } yield ()
 
   def apply[F[_]: OnMinecraftThread: SleepMinecraftTick: Concurrent: InspectConcreteLocation](

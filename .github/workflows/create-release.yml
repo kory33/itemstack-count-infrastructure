@@ -28,7 +28,7 @@ jobs:
           echo ::set-output name=COMMIT_SUMMARY::$COMMIT_SUMMARY
 
       - name: assembly
-        run: sbt assembly
+        run: sbt "bukkit/assembly"
 
       - name: Create Release
         id: create_release
@@ -43,4 +43,4 @@ jobs:
           draft: false
           prerelease: false
           files: |
-            target/build/ItemStackCounter.jar
+            bukkit/target/build/ItemStackCounter.jar

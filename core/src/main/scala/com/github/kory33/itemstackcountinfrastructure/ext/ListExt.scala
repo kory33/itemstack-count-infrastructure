@@ -7,7 +7,6 @@ import scala.reflect.TypeTest
 object ListExt {
 
   extension [A](list: List[A])
-
     /**
      * Splits this collection into a (mapped) prefix/suffix pair with a mapping function `f`.
      *

@@ -20,7 +20,7 @@ import org.bukkit.inventory.Inventory
 /**
  * A listener object that is responsible for marking inventories for inspection.
  */
-class ContainerBlockMonitor(targetRef: Ref[IO, InspectionTargets])(
+class ContainerBlockMarker(targetRef: Ref[IO, InspectionTargets])(
   using ioRuntime: cats.effect.unsafe.IORuntime
 ) extends Listener {
 

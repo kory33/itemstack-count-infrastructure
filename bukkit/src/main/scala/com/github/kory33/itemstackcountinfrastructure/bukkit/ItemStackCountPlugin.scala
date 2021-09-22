@@ -61,7 +61,7 @@ class ItemStackCountPlugin extends JavaPlugin {
     Bukkit
       .getServer
       .getPluginManager
-      .registerEvents(listeners.ContainerBlockMonitor(allocatedRef), this)
+      .registerEvents(listeners.ContainerBlockMarker(allocatedRef), this)
 
     dataSinkResource = Some((allocatedRef, finalizer))
   }

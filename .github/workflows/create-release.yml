@@ -9,7 +9,6 @@ jobs:
   build:
     name: Create Release
     runs-on: ubuntu-latest
-    container: ghcr.io/giganticminecraft/seichiassist-builder:1a64049
     steps:
       - name: Checkout code
         uses: actions/checkout@v2

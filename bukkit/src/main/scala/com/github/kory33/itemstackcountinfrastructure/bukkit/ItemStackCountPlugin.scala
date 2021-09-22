@@ -9,7 +9,7 @@ import com.github.kory33.itemstackcountinfrastructure.bukkit.concurrent.{
 import com.github.kory33.itemstackcountinfrastructure.bukkit.config.PluginConfig
 import com.github.kory33.itemstackcountinfrastructure.bukkit.inspection.algebra.InspectBukkitWorld
 import com.github.kory33.itemstackcountinfrastructure.bukkit.logging.Log4CatsLoggerOnPlugin
-import com.github.kory33.itemstackcountinfrastructure.core.InspectionTargets
+import com.github.kory33.itemstackcountinfrastructure.core.{CommandRecorder, InspectionTargets}
 import com.github.kory33.itemstackcountinfrastructure.infra.redis.RedisCommandQueue
 import com.github.kory33.itemstackcountinfrastructure.minecraft.concurrent.{
   OnMinecraftThread,
@@ -51,6 +51,7 @@ class ItemStackCountPlugin extends JavaPlugin {
       .readRedisConnectionConfig
       .utf8ConnectionResource[IO]
       .map(RedisCommandQueue.apply)
+      .map(CommandRecorder.apply)
       .flatMap(InspectionProcess[IO])
       .map(_.targets)
       .allocated // leak resource because resource lifetime extends to plugin's onDisable

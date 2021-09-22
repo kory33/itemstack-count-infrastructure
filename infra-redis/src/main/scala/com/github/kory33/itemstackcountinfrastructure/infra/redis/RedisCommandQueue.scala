@@ -1,11 +1,7 @@
 package com.github.kory33.itemstackcountinfrastructure.infra.redis
 
 import cats.Applicative
-import com.github.kory33.itemstackcountinfrastructure.core.{
-  Command,
-  CommandRecorder,
-  ItemAmountsAtLocation
-}
+import com.github.kory33.itemstackcountinfrastructure.core.{Command, ItemAmountsAtLocation}
 import com.github.kory33.itemstackcountinfrastructure.ext.ListExt
 import com.github.kory33.itemstackcountinfrastructure.util.BatchedQueue
 import dev.profunktor.redis4cats.effect.MkRedis

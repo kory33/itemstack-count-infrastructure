@@ -13,4 +13,7 @@ enum Command:
   case ReportNonExistence(at: StorageLocation)
   case DropRecordsOn(worldName: String)
 
+/**
+ * An object that allows sending [[Command]]s to an underlying persistence system.
+ */
 case class CommandRecorder[F[_]](queue: BatchedQueue[F, Command])

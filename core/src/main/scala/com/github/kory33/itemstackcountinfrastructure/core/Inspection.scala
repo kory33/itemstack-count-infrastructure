@@ -7,10 +7,18 @@ import com.github.kory33.itemstackcountinfrastructure.core.{
   StorageLocation
 }
 
+/**
+ * Result of inspecting some [[StorageLocation]]. This is either `NoContainerFound` or `Found`
+ * with contents of the storage described by [[ItemAmounts]].
+ */
 enum LocationInspectionResult:
   case NoContainerFound
   case Found(amounts: ItemAmounts)
 
+/**
+ * Result of inspecting some set of [[StorageLocation]]. This object can be converted to a
+ * [[List]] of [[Command]]s that this system needs to send to the underlying persistence.
+ */
 case class InspectionResult(results: Map[StorageLocation, LocationInspectionResult]) {
 
   def toCommandsToRecord: List[Command] =

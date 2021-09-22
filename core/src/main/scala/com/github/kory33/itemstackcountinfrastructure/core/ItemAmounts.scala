@@ -11,7 +11,7 @@ object ItemStackTypeName:
 extension (itemStackName: ItemStackTypeName) inline def asNormalString: String = itemStackName
 
 /**
- * Represents an aggregated counts of multiple items at some location.
+ * Represents an aggregated counts of multiple items at a location.
  */
 type ItemAmounts = Map[ItemStackTypeName, Int]
 

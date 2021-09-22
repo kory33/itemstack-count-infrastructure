@@ -1,4 +1,4 @@
-package com.github.kory33.itemstackcountinfrastructure.bukkit.inspection
+package com.github.kory33.itemstackcountinfrastructure.minecraft.plugin.inspection
 
 import com.github.kory33.itemstackcountinfrastructure.core.StorageLocation
 

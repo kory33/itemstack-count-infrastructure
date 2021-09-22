@@ -1,8 +1,8 @@
-package com.github.kory33.itemstackcountinfrastructure.bukkit.inspection
+package com.github.kory33.itemstackcountinfrastructure.minecraft.plugin.inspection
 
 import cats.Monad
 import cats.effect.SyncIO
-import cats.effect.kernel.{Concurrent, GenSpawn, MonadCancel, Ref, Resource}
+import cats.effect.kernel.*
 import com.github.kory33.itemstackcountinfrastructure.core.{
   Command,
   StorageLocation
@@ -11,6 +11,7 @@ import com.github.kory33.itemstackcountinfrastructure.minecraft.concurrent.{
   OnMinecraftThread,
   SleepMinecraftTick
 }
+import com.github.kory33.itemstackcountinfrastructure.minecraft.plugin.inspection.algebra.InspectConcreteLocation
 import com.github.kory33.itemstackcountinfrastructure.util.BatchedQueue
 
 class InspectionProcess[F[_]] private (val targets: Ref[F, InspectionTargets])
@@ -19,15 +20,19 @@ object InspectionProcess {
 
   import cats.implicits.given
 
-  private def inspectAndQueueCommands[F[_]: OnMinecraftThread: Monad](
+  private def inspectAndQueueCommands[F[
+    _
+  ]: OnMinecraftThread: Monad: InspectConcreteLocation](
     batchedQueue: BatchedQueue[F, Command]
   )(inspectionTargets: InspectionTargets): F[Unit] =
     for {
-      result <- InspectBukkitWorld[F](inspectionTargets)
+      result <- InspectConcreteLocation[F](inspectionTargets)
       _ <- batchedQueue.queueList(result.results.map(Command.UpdateTo.apply))
     } yield ()
 
-  def apply[F[_]: OnMinecraftThread: SleepMinecraftTick: Concurrent](
+  def apply[F[
+    _
+  ]: OnMinecraftThread: SleepMinecraftTick: Concurrent: InspectConcreteLocation](
     batchedQueue: BatchedQueue[F, Command]
   ): Resource[F, InspectionProcess[F]] =
     for {

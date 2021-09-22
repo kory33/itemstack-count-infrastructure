@@ -25,9 +25,7 @@ object MysqlCommandRecorder {
   import cats.implicits.given
   import doobie.implicits.given
 
-  private val createDBAndTables: ConnectionIO[Unit] = List(
-    sql"""create database iscount; using database iscount;""".update.run,
-    sql"""
+  private val createDBAndTables: ConnectionIO[Unit] = List(sql"""
       create table item_stacks (
         world_name varchar(255) not null
         , x int not null
@@ -38,8 +36,7 @@ object MysqlCommandRecorder {
         , primary key (world_name, x, y, z, item_stack_type)
         , index idx_stack_type (world_name, item_stack_type)
       )
-    """.update.run
-  ).sequence.void
+    """.update.run).sequence.void
 
   private def clearRecordsAt(locations: List[StorageLocation]): ConnectionIO[Unit] =
     locations.traverse { location =>

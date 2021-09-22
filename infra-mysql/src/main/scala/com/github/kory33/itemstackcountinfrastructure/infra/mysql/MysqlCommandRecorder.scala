@@ -1,10 +1,9 @@
 package com.github.kory33.itemstackcountinfrastructure.infra.mysql
 
 import cats.Applicative
-import cats.effect.kernel.{Async, MonadCancelThrow}
 import cats.effect.IO
+import cats.effect.kernel.{Async, MonadCancelThrow}
 import com.github.kory33.itemstackcountinfrastructure.core.algebra.InterpretCompressedCommand
-import com.github.kory33.itemstackcountinfrastructure.util.BatchedQueue
 import com.github.kory33.itemstackcountinfrastructure.core.{
   Command,
   CommandRecorder,
@@ -12,10 +11,11 @@ import com.github.kory33.itemstackcountinfrastructure.core.{
   StorageLocation
 }
 import com.github.kory33.itemstackcountinfrastructure.ext.ListExt
+import com.github.kory33.itemstackcountinfrastructure.util.BatchedQueue
 import doobie.free.KleisliInterpreter
 import doobie.free.connection.ConnectionIO
-import doobie.util.update.Update
 import doobie.util.transactor.Transactor
+import doobie.util.update.Update
 
 import scala.annotation.tailrec
 import scala.collection.immutable.Queue

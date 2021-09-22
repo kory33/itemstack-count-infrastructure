@@ -9,7 +9,7 @@ case class MysqlConnectionConfig(mysqlUrl: String, username: String, password: S
 
   def transactor[F[_]: Async]: Transactor[F] =
     Transactor.fromDriverManager[F](
-      "org.postgresql.Driver",
+      "com.mysql.jdbc.Driver",
       s"jdbc:mysql://${mysqlUrl}",
       username,
       password

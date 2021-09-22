@@ -26,7 +26,7 @@ object MysqlCommandRecorder {
   import doobie.implicits.given
 
   private val createDBAndTables: ConnectionIO[Unit] = List(sql"""
-      create table item_stacks (
+      create table if not exists item_stacks (
         world_name varchar(255) not null
         , x int not null
         , y int not null

@@ -70,6 +70,12 @@ lazy val bukkit = {
       // トークン置換を行ったファイルをunmanagedResourcesのコピーから除外する
       Compile / unmanagedResources / excludeFilter :=
         filesToBeReplacedInResourceFolder
-          .foldLeft((unmanagedResources / excludeFilter).value)(_ || _)
+          .foldLeft((unmanagedResources / excludeFilter).value)(_ || _),
+      assembly / assemblyMergeStrategy ~= (old => {
+        case PathList("META-INF", "MANIFEST.MF") => MergeStrategy.discard
+        // redis4cats -> lettuce introduces netty dependencies, we concat version properties
+        case PathList("META-INF", "io.netty.versions.properties") => MergeStrategy.concat
+        case x                                                    => old(x)
+      })
     )
 }

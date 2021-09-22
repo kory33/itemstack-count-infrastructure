@@ -1,0 +1,13 @@
+version: "3.8"
+
+services:
+  paper:
+    build: .
+
+    stdin_open: true
+    ports:
+      - 25565:25565
+    environment:
+      JAVA_TOOL_OPTIONS: "-Xms1G -Xmx1G"
+    volumes:
+      - ./data:/app

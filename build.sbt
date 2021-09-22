@@ -23,11 +23,18 @@ lazy val core = project
   .settings(moduleName := "itemstack-count-infrastructure-core")
   .settings()
 
-lazy val infra_redis = project
+lazy val infra_mysql = project
   .dependsOn(core)
-  .in(file("infra-redis"))
-  .settings(moduleName := "itemstack-count-infrastructure-infra-redis")
-  .settings(libraryDependencies ++= Seq("dev.profunktor" %% "redis4cats-effects" % "1.0.0"))
+  .in(file("infra-mysql"))
+  .settings(moduleName := "itemstack-count-infrastructure-infra-mysql")
+  .settings(
+    libraryDependencies ++= Seq(
+      // driver
+      "mysql" % "mysql-connector-java" % "8.0.26",
+      // jdbc wrapper
+      "org.tpolecat" %% "doobie-core" % "1.0.0-RC1"
+    )
+  )
 
 // region token replacement settings keys
 
@@ -42,7 +49,7 @@ val filesToBeReplacedInResourceFolder = Seq("plugin.yml")
 
 lazy val bukkit = {
   project
-    .dependsOn(core, infra_redis)
+    .dependsOn(core, infra_mysql)
     .in(file("bukkit"))
     .settings(moduleName := "itemstack-count-infrastructure-bukkit")
     .settings(
@@ -51,11 +58,6 @@ lazy val bukkit = {
       ),
       assembly / assemblyOutputPath := baseDirectory.value / "target" / "build" / s"itemstack-count.jar",
       libraryDependencies ++= Seq(
-        // logging infrastructure
-        "org.slf4j" % "slf4j-jdk14" % "1.7.28",
-        "org.typelevel" %% "log4cats-slf4j" % "2.1.1",
-        "dev.profunktor" %% "redis4cats-log4cats" % "1.0.0",
-
         // spigot dependency
         "org.spigotmc" % "spigot-api" % "1.17.1-R0.1-SNAPSHOT" % Provided
       ),

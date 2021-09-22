@@ -4,8 +4,9 @@ import cats.effect.SyncIO
 
 trait OnMinecraftThread[F[_]] {
 
-  /** Run the provided synchronous action on the minecraft server's main thread.
-    */
+  /**
+   * Run the provided synchronous action on the minecraft server's main thread.
+   */
   def run[A](syncAction: SyncIO[A]): F[A]
 
 }

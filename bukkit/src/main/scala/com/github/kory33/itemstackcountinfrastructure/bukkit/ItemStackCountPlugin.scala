@@ -58,7 +58,9 @@ class ItemStackCountPlugin extends JavaPlugin {
       .allocated // leak resource because resource lifetime extends to plugin's onDisable
       .unsafeRunSync()
 
-    Bukkit.getServer.getPluginManager
+    Bukkit
+      .getServer
+      .getPluginManager
       .registerEvents(listeners.ContainerBlockMonitor(allocatedRef), this)
 
     dataSinkResource = Some((allocatedRef, finalizer))

@@ -5,11 +5,7 @@ import cats.effect.kernel.Resource
 import dev.profunktor.redis4cats.effect.MkRedis
 import dev.profunktor.redis4cats.{Redis, RedisCommands}
 
-case class RedisConnectionConfig(
-  host: String,
-  port: Int,
-  password: Option[String]
-) {
+case class RedisConnectionConfig(host: String, port: Int, password: Option[String]) {
 
   import cats.implicits.given
 

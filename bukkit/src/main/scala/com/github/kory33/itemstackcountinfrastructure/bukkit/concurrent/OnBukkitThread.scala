@@ -15,8 +15,7 @@ object OnBukkitThread {
         // when this action is executed on server shutdown (in which case
         // scheduler no longer accepts tasks, but synchronous actions may be executed)
         val tryRunning: SyncIO[Option[A]] = SyncIO {
-          if (Bukkit.getServer.isPrimaryThread) then
-            Some(syncAction.unsafeRunSync())
+          if (Bukkit.getServer.isPrimaryThread) then Some(syncAction.unsafeRunSync())
           else None
         }
 

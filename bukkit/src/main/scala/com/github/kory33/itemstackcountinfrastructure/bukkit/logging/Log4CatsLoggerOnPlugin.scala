@@ -10,8 +10,9 @@ import java.util.logging.{LogManager, LogRecord, Logger as JULLogger}
 
 object Log4CatsLoggerOnPlugin {
 
-  /** Wrap the logger provided by a bukkit plugin into log4cats logger.
-    */
+  /**
+   * Wrap the logger provided by a bukkit plugin into log4cats logger.
+   */
   def apply[F[_]: Sync](plugin: JavaPlugin): SelfAwareStructuredLogger[F] = {
     // For some reason, JDK14LoggerFactory does not return the plugin logger
     // when `plugin.getLogger.getName` is passed as the parameter.

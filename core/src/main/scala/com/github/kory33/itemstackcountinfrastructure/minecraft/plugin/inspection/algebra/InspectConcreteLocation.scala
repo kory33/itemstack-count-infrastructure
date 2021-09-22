@@ -15,8 +15,6 @@ trait InspectConcreteLocation[F[_]] {
 
 object InspectConcreteLocation {
 
-  def apply[F[_]](using
-    ev: InspectConcreteLocation[F]
-  ): InspectConcreteLocation[F] = ev
+  def apply[F[_]](using ev: InspectConcreteLocation[F]): InspectConcreteLocation[F] = ev
 
 }

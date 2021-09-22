@@ -21,8 +21,7 @@ class PluginConfig private (val config: FileConfiguration) {
       host = section.getString("host"),
       port = section.getInt("port"),
       password =
-        if (section.contains("password")) then
-          Some(section.getString("password"))
+        if (section.contains("password")) then Some(section.getString("password"))
         else None
     )
   }

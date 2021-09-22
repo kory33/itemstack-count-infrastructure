@@ -3,10 +3,7 @@ package com.github.kory33.itemstackcountinfrastructure.minecraft.plugin.inspecti
 import cats.Monad
 import cats.effect.SyncIO
 import cats.effect.kernel.*
-import com.github.kory33.itemstackcountinfrastructure.core.{
-  Command,
-  StorageLocation
-}
+import com.github.kory33.itemstackcountinfrastructure.core.{Command, StorageLocation}
 import com.github.kory33.itemstackcountinfrastructure.minecraft.concurrent.{
   OnMinecraftThread,
   SleepMinecraftTick
@@ -20,9 +17,7 @@ object InspectionProcess {
 
   import cats.implicits.given
 
-  private def inspectAndQueueCommands[F[
-    _
-  ]: OnMinecraftThread: Monad: InspectConcreteLocation](
+  private def inspectAndQueueCommands[F[_]: OnMinecraftThread: Monad: InspectConcreteLocation](
     batchedQueue: BatchedQueue[F, Command]
   )(inspectionTargets: InspectionTargets): F[Unit] =
     for {
@@ -30,18 +25,15 @@ object InspectionProcess {
       _ <- batchedQueue.queueList(result.results.map(Command.UpdateTo.apply))
     } yield ()
 
-  def apply[F[
-    _
-  ]: OnMinecraftThread: SleepMinecraftTick: Concurrent: InspectConcreteLocation](
+  def apply[F[_]: OnMinecraftThread: SleepMinecraftTick: Concurrent: InspectConcreteLocation](
     batchedQueue: BatchedQueue[F, Command]
   ): Resource[F, InspectionProcess[F]] =
     for {
-      targetRef <- Resource.make(Ref[F].of(InspectionTargets.apply(Set.empty)))(
-        ref =>
-          for {
-            targetsToFinalize <- ref.get
-            _ <- inspectAndQueueCommands(batchedQueue)(targetsToFinalize)
-          } yield ()
+      targetRef <- Resource.make(Ref[F].of(InspectionTargets.apply(Set.empty)))(ref =>
+        for {
+          targetsToFinalize <- ref.get
+          _ <- inspectAndQueueCommands(batchedQueue)(targetsToFinalize)
+        } yield ()
       )
       _ <- GenSpawn[F, Throwable].background {
         Monad[F].foreverM {

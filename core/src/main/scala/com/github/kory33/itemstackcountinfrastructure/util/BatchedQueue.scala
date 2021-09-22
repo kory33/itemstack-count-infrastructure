@@ -13,15 +13,16 @@ import scala.concurrent.duration.{Duration, FiniteDuration}
 
 trait BatchedQueue[F[_], E] {
 
-  /** Queue an element to the underlying queue.
-    */
+  /**
+   * Queue an element to the underlying queue.
+   */
   def queue(elem: E): F[Unit]
 
   import cats.implicits.given
 
-  /** Like [[queue]], but queues multiple elements and is in general more
-    * efficient.
-    */
+  /**
+   * Like [[queue]], but queues multiple elements and is in general more efficient.
+   */
   def queueList(elems: List[E])(using F: Applicative[F]): F[Unit] =
     elems.traverse(queue).void
 

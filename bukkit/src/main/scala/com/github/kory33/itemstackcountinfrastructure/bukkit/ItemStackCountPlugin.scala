@@ -16,7 +16,7 @@ import com.github.kory33.itemstackcountinfrastructure.minecraft.concurrent.{
   SleepMinecraftTick
 }
 import com.github.kory33.itemstackcountinfrastructure.minecraft.plugin.inspection.InspectionProcess
-import com.github.kory33.itemstackcountinfrastructure.minecraft.plugin.inspection.algebra.InspectConcreteLocation
+import com.github.kory33.itemstackcountinfrastructure.core.algebra.InspectStorages
 import org.bukkit.Bukkit
 import org.bukkit.event.HandlerList
 import org.bukkit.plugin.java.JavaPlugin
@@ -38,7 +38,7 @@ class ItemStackCountPlugin extends JavaPlugin {
   private given sleepBukkitTick: SleepMinecraftTick[IO] =
     SleepBukkitTick[IO](this)
 
-  private given inspectBukkitWorld: InspectConcreteLocation[IO] =
+  private given inspectBukkitWorld: InspectStorages[IO] =
     InspectBukkitWorld[IO]
 
   private var pluginResource: Option[(Ref[IO, InspectionTargets], IO[Unit])] =

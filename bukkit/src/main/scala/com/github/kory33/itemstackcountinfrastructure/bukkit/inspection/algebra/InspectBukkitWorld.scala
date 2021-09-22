@@ -13,15 +13,15 @@ import com.github.kory33.itemstackcountinfrastructure.core.{
   StorageLocation
 }
 import com.github.kory33.itemstackcountinfrastructure.minecraft.concurrent.OnMinecraftThread
-import com.github.kory33.itemstackcountinfrastructure.minecraft.plugin.inspection.algebra.InspectConcreteLocation
+import com.github.kory33.itemstackcountinfrastructure.core.algebra.InspectStorages
 import org.bukkit.inventory.{Inventory, ItemStack}
 import org.bukkit.{Bukkit, Location}
 
 object InspectBukkitWorld {
 
-  def apply[F[_]: OnMinecraftThread: Functor]: InspectConcreteLocation[F] =
-    new InspectConcreteLocation[F] {
-      override def apply(targets: InspectionTargets): F[InspectionResult] = {
+  def apply[F[_]: OnMinecraftThread: Functor]: InspectStorages[F] =
+    new InspectStorages[F] {
+      override def at(targets: InspectionTargets): F[InspectionResult] = {
         val worldGrouped: Map[String, List[(Int, Int, Int)]] =
           targets.targets.toList.groupMap(_.worldName)(l => (l.x, l.y, l.z))
 

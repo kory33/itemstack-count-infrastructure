@@ -13,7 +13,7 @@ import com.github.kory33.itemstackcountinfrastructure.minecraft.concurrent.{
   OnMinecraftThread,
   SleepMinecraftTick
 }
-import com.github.kory33.itemstackcountinfrastructure.minecraft.plugin.inspection.algebra.InspectConcreteLocation
+import com.github.kory33.itemstackcountinfrastructure.core.algebra.InspectStorages
 import com.github.kory33.itemstackcountinfrastructure.util.BatchedQueue
 
 /**
@@ -27,15 +27,15 @@ object InspectionProcess {
 
   import cats.implicits.given
 
-  private def inspectAndQueueCommands[F[_]: OnMinecraftThread: Monad: InspectConcreteLocation](
+  private def inspectAndQueueCommands[F[_]: OnMinecraftThread: Monad: InspectStorages](
     recorder: CommandRecorder[F]
   )(inspectionTargets: InspectionTargets): F[Unit] =
     for {
-      result <- InspectConcreteLocation[F](inspectionTargets)
+      result <- InspectStorages[F].at(inspectionTargets)
       _ <- recorder.queue.queueList(result.toCommandsToRecord)
     } yield ()
 
-  def apply[F[_]: OnMinecraftThread: SleepMinecraftTick: Concurrent: InspectConcreteLocation](
+  def apply[F[_]: OnMinecraftThread: SleepMinecraftTick: Concurrent: InspectStorages](
     recorder: CommandRecorder[F]
   ): Resource[F, InspectionProcess[F]] =
     for {

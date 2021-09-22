@@ -43,4 +43,4 @@ jobs:
           draft: false
           prerelease: false
           files: |
-            bukkit/target/build/ItemStackCounter.jar
+            bukkit/target/build/itemstack-count.jar

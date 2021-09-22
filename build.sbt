@@ -49,7 +49,7 @@ lazy val bukkit = {
       resolvers ++= Seq(
         "hub.spigotmc.org" at "https://hub.spigotmc.org/nexus/content/repositories/snapshots"
       ),
-      assembly / assemblyOutputPath := baseDirectory.value / "target" / "build" / s"itemstack-count_${version.value}.jar",
+      assembly / assemblyOutputPath := baseDirectory.value / "target" / "build" / s"itemstack-count.jar",
       libraryDependencies ++= Seq(
         // logging infrastructure
         "org.slf4j" % "slf4j-jdk14" % "1.7.28",

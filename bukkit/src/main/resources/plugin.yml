@@ -2,6 +2,8 @@ name: @name@
 main: com.github.kory33.itemstackcountinfrastructure.bukkit.ItemStackCountPlugin
 version: @version@
 
+api-version: 1.17
+
 commands:
   iscount:
     description: Command to manipulate ISCount system.

@@ -28,10 +28,16 @@ object InspectBukkitWorld {
 
               val result =
                 world.getBlockAt(x, y, z).getState match {
+                  case chest: org.bukkit.block.Chest =>
+                    Some(chest.getBlockInventory)
                   case state: org.bukkit.block.Container =>
+                    Some(state.getInventory)
+                  case _ =>
+                    None
+                } match {
+                  case Some(inventory) =>
                     LocationInspectionResult.Found {
-                      state
-                        .getInventory
+                      inventory
                         .asScala
                         .toList
                         .filter(s => s != null && s.getType != Material.AIR)
@@ -42,7 +48,7 @@ object InspectBukkitWorld {
                         }
                         .toMap
                     }
-                  case _ =>
+                  case None =>
                     LocationInspectionResult.NoContainerFound
                 }
 

@@ -5,7 +5,7 @@ import cats.effect.kernel.Ref
 import com.github.kory33.itemstackcountinfrastructure.bukkit.adapter.StorageLocationFromBukkit
 import com.github.kory33.itemstackcountinfrastructure.core.InspectionTargets
 import org.bukkit.block.{Block, Container}
-import org.bukkit.event.block.{BlockBreakEvent, BlockPlaceEvent}
+import org.bukkit.event.block.{BlockBreakEvent, BlockDispenseEvent, BlockPlaceEvent}
 import org.bukkit.event.inventory.{
   InventoryClickEvent,
   InventoryCloseEvent,
@@ -42,6 +42,11 @@ class ContainerBlockMarker(targetRef: Ref[IO, InspectionTargets])(
 
   @EventHandler
   def onBlockBreak(event: BlockBreakEvent): Unit = {
+    unsafeRegisterBlock(event.getBlock)
+  }
+
+  @EventHandler
+  def onBlockDispense(event: BlockDispenseEvent): Unit = {
     unsafeRegisterBlock(event.getBlock)
   }
 

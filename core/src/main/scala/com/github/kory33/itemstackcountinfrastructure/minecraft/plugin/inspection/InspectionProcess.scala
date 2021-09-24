@@ -35,7 +35,7 @@ object InspectionProcess {
         .getAndSet(InspectionTargets.empty)
         .flatMap(InspectStorages[F].at)
         .map(_.toCommandsToRecord)
-        .flatMap(recorder.queue.queueList)
+        .flatMap(recorder.queueList)
     }
 
   /**

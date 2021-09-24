@@ -29,7 +29,6 @@ class ItemStackCountCommand(
     args match {
       case Array("drop-records", worldNames*) =>
         recorder
-          .queue
           .queueList(worldNames.toList.map(Command.DropRecordsOn.apply))
           .unsafeRunAndForget()
         true

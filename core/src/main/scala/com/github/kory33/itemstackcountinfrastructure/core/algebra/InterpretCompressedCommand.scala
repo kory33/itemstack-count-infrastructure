@@ -21,7 +21,7 @@ trait InterpretCompressedCommand[F[_]] {
    * received in `queueList` is received by [[queueReportAmountCommands()]] and
    * [[queueDropRecordsCommand()]], with their effect sequenced.
    */
-  final def intoCommandRecorder: CommandRecorder[F] = CommandRecorder {
+  final def intoCommandRecorder: CommandRecorder[F] =
     new BatchedQueue[F, Command] {
 
       import cats.implicits.given
@@ -59,5 +59,4 @@ trait InterpretCompressedCommand[F[_]] {
         plan(elems, Queue.empty).sequence.void
       }
     }
-  }
 }

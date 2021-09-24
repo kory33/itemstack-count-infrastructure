@@ -52,8 +52,8 @@ class InterpretCompressedCommandTest extends AnyFlatSpec {
       recorder = algebraOver(queue).intoCommandRecorder
 
       _ <- testData.traverse {
-        case Left(cmd)   => recorder.queue.queue(cmd)
-        case Right(cmds) => recorder.queue.queueList(cmds)
+        case Left(cmd)   => recorder.queue(cmd)
+        case Right(cmds) => recorder.queueList(cmds)
       }
 
       received <- queue.take.replicateA(testDataFlattened.size)

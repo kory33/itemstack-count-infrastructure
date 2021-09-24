@@ -1,7 +1,7 @@
-package com.github.kory33.itemstackcountinfrastructure.bukkit.concurrent
+package com.github.kory33.itemstackcountinfrastructure.bukkit.algebra.concurrent
 
 import cats.effect.kernel.Async
-import com.github.kory33.itemstackcountinfrastructure.minecraft.concurrent.SleepMinecraftTick
+import com.github.kory33.itemstackcountinfrastructure.minecraft.algebra.concurrent.SleepMinecraftTick
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
 

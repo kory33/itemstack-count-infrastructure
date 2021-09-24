@@ -1,4 +1,4 @@
-package com.github.kory33.itemstackcountinfrastructure.minecraft.concurrent
+package com.github.kory33.itemstackcountinfrastructure.minecraft.algebra.concurrent
 
 trait SleepMinecraftTick[F[_]] {
 

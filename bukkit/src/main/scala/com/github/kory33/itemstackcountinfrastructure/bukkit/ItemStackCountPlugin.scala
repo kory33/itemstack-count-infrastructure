@@ -2,20 +2,20 @@ package com.github.kory33.itemstackcountinfrastructure.bukkit
 
 import cats.effect.kernel.{Ref, Resource, Sync}
 import cats.effect.{IO, SyncIO}
+import com.github.kory33.itemstackcountinfrastructure.bukkit.algebra.concurrent.{
+  OnBukkitThread,
+  SleepBukkitTick
+}
+import com.github.kory33.itemstackcountinfrastructure.bukkit.algebra.inspection.InspectBukkitWorld
 import com.github.kory33.itemstackcountinfrastructure.bukkit.algebra.{
   GetLoadedBukkitStorageLocations,
   GetLoadedStorageLocations
 }
-import com.github.kory33.itemstackcountinfrastructure.bukkit.concurrent.{
-  OnBukkitThread,
-  SleepBukkitTick
-}
 import com.github.kory33.itemstackcountinfrastructure.bukkit.config.PluginConfig
-import com.github.kory33.itemstackcountinfrastructure.bukkit.inspection.algebra.InspectBukkitWorld
 import com.github.kory33.itemstackcountinfrastructure.core.algebra.InspectStorages
 import com.github.kory33.itemstackcountinfrastructure.core.{CommandRecorder, InspectionTargets}
 import com.github.kory33.itemstackcountinfrastructure.infra.mysql.MysqlCommandRecorder
-import com.github.kory33.itemstackcountinfrastructure.minecraft.concurrent.{
+import com.github.kory33.itemstackcountinfrastructure.minecraft.algebra.concurrent.{
   OnMinecraftThread,
   SleepMinecraftTick
 }

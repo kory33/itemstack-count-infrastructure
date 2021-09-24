@@ -10,7 +10,7 @@ import com.github.kory33.itemstackcountinfrastructure.core.{
   InspectionTargets,
   StorageLocation
 }
-import com.github.kory33.itemstackcountinfrastructure.minecraft.concurrent.{
+import com.github.kory33.itemstackcountinfrastructure.minecraft.algebra.concurrent.{
   OnMinecraftThread,
   SleepMinecraftTick
 }

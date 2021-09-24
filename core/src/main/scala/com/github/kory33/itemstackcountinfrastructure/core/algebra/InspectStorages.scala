@@ -2,7 +2,7 @@ package com.github.kory33.itemstackcountinfrastructure.core.algebra
 
 import cats.Functor
 import com.github.kory33.itemstackcountinfrastructure.core.{InspectionResult, InspectionTargets}
-import com.github.kory33.itemstackcountinfrastructure.minecraft.concurrent.OnMinecraftThread
+import com.github.kory33.itemstackcountinfrastructure.minecraft.algebra.concurrent.OnMinecraftThread
 
 /**
  * The final-encoded algebra that provides an action to inspect storage locations.

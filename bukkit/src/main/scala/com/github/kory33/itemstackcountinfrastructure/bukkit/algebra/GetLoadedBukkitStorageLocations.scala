@@ -2,7 +2,7 @@ package com.github.kory33.itemstackcountinfrastructure.bukkit.algebra
 
 import cats.effect.SyncIO
 import com.github.kory33.itemstackcountinfrastructure.core.StorageLocation
-import com.github.kory33.itemstackcountinfrastructure.minecraft.concurrent.OnMinecraftThread
+import com.github.kory33.itemstackcountinfrastructure.minecraft.algebra.concurrent.OnMinecraftThread
 import org.bukkit.{Bukkit, World}
 
 object GetLoadedBukkitStorageLocations {

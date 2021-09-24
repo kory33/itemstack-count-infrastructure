@@ -1,8 +1,8 @@
-package com.github.kory33.itemstackcountinfrastructure.bukkit.concurrent
+package com.github.kory33.itemstackcountinfrastructure.bukkit.algebra.concurrent
 
 import cats.effect.SyncIO
 import cats.effect.kernel.Async
-import com.github.kory33.itemstackcountinfrastructure.minecraft.concurrent.OnMinecraftThread
+import com.github.kory33.itemstackcountinfrastructure.minecraft.algebra.concurrent.OnMinecraftThread
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
 

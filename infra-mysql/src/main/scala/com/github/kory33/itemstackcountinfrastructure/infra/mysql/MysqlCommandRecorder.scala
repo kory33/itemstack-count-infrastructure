@@ -93,9 +93,6 @@ object MysqlCommandRecorder {
               clearRecordsAt(commands.map(_.record.at)) >> insertReports(commands)
             }
 
-          def queueReportNonExistenceCommand(command: Command.ReportNonExistence): F[Unit] =
-            xa.trans.apply(clearRecordsAt(List(command.at)))
-
           def queueDropRecordsCommand(command: Command.DropRecordsOn): F[Unit] =
             xa.trans.apply(dropRecordsOn(command.worldName)).void
         }

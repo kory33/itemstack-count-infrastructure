@@ -86,16 +86,14 @@ object MysqlCommandRecorder {
 
   def apply[F[_]: Async](using xa: Transactor[F]): F[CommandRecorder[F]] =
     xa.trans.apply(createDBAndTables).as {
-      CommandRecorder.fromCompressedCommandInterpreter[F] {
-        new InterpretCompressedCommand[F] {
-          def queueReportAmountCommands(commands: List[Command.ReportAmount]): F[Unit] =
-            xa.trans.apply {
-              clearRecordsAt(commands.map(_.record.at)) >> insertReports(commands)
-            }
+      new InterpretCompressedCommand[F] {
+        def queueReportAmountCommands(commands: List[Command.ReportAmount]): F[Unit] =
+          xa.trans.apply {
+            clearRecordsAt(commands.map(_.record.at)) >> insertReports(commands)
+          }
 
-          def queueDropRecordsCommand(command: Command.DropRecordsOn): F[Unit] =
-            xa.trans.apply(dropRecordsOn(command.worldName)).void
-        }
-      }
+        def queueDropRecordsCommand(command: Command.DropRecordsOn): F[Unit] =
+          xa.trans.apply(dropRecordsOn(command.worldName)).void
+      }.intoCommandRecorder
     }
 }

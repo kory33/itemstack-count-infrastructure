@@ -1,16 +1,17 @@
-package com.github.kory33.itemstackcountinfrastructure.core
+package com.github.kory33.itemstackcountinfrastructure.core.algebra
 
 import cats.effect.IO
 import cats.effect.std.Queue
 import com.github.kory33.itemstackcountinfrastructure.core.algebra.InterpretCompressedCommand
+import com.github.kory33.itemstackcountinfrastructure.core.*
 import org.scalatest.flatspec.AnyFlatSpec
 
-class CommandRecorderTest extends AnyFlatSpec {
+class InterpretCompressedCommandTest extends AnyFlatSpec {
 
-  import cats.implicits.given
   import cats.effect.unsafe.implicits.global
+  import cats.implicits.given
 
-  "CommandRecorder.fromCompressedCommandInterpreter" should "pass everything it has received to the algebra" in {
+  "InterpretCompressedCommandTest.fromCompressedCommandInterpreter" should "pass everything it has received to the algebra" in {
     def algebraOver(queue: Queue[IO, Command]): InterpretCompressedCommand[IO] = {
       new InterpretCompressedCommand[IO] {
         override def queueReportAmountCommands(commands: List[Command.ReportAmount]): IO[Unit] =
@@ -48,8 +49,7 @@ class CommandRecorderTest extends AnyFlatSpec {
 
     val program = for {
       queue <- Queue.unbounded[IO, Command]
-      algebra = algebraOver(queue)
-      recorder = CommandRecorder.fromCompressedCommandInterpreter(algebra)
+      recorder = algebraOver(queue).intoCommandRecorder
 
       _ <- testData.traverse {
         case Left(cmd)   => recorder.queue.queue(cmd)

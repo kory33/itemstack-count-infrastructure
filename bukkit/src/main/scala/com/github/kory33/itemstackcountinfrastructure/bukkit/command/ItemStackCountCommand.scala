@@ -8,7 +8,7 @@ import com.github.kory33.itemstackcountinfrastructure.core.{
   InspectionTargets
 }
 import com.github.kory33.itemstackcountinfrastructure.minecraft.plugin.inspection.GatherStorageLocations
-import org.bukkit.command.{CommandExecutor, CommandSender, TabExecutor, Command as BCommand}
+import org.bukkit.command.{Command => BCommand, CommandExecutor, CommandSender, TabExecutor}
 
 import java.util
 

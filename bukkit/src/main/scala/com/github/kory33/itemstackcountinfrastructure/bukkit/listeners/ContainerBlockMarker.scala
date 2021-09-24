@@ -3,7 +3,7 @@ package com.github.kory33.itemstackcountinfrastructure.bukkit.listeners
 import cats.effect.IO
 import cats.effect.kernel.Ref
 import com.github.kory33.itemstackcountinfrastructure.bukkit.adapter.StorageLocationFromBukkit
-import com.github.kory33.itemstackcountinfrastructure.core.InspectionTargets
+import com.github.kory33.itemstackcountinfrastructure.core.{InspectionTargets, Location}
 import org.bukkit.block.{Block, Container, DoubleChest}
 import org.bukkit.event.block.{BlockBreakEvent, BlockDispenseEvent, BlockPlaceEvent}
 import org.bukkit.event.inventory.{
@@ -24,16 +24,19 @@ class ContainerBlockMarker(targetRef: Ref[IO, InspectionTargets])(
   using ioRuntime: cats.effect.unsafe.IORuntime
 ) extends Listener {
 
+  private def unsafeRegisterLocations(locations: Seq[Location]): Unit = {
+    targetRef.update(_.addTargets(locations: _*)).unsafeRunAndForget()
+  }
+
   private def unsafeRegisterBlock(blocks: Block*): Unit = {
-    targetRef
-      .update(_.addTargets(blocks.map(StorageLocationFromBukkit.block): _*))
-      .unsafeRunSync()
+    unsafeRegisterLocations(blocks.map(StorageLocationFromBukkit.block))
   }
 
   private def unsafeTryRegisterInventoryOwners(inventories: Inventory*): Unit = {
-    targetRef
-      .update(_.addTargets(StorageLocationFromBukkit.inventories(inventories: _*): _*))
-      .unsafeRunSync()
+    // compute on server thread because accessing inventory on unsafeRunSync will result in an error
+    val locations = StorageLocationFromBukkit.inventories(inventories: _*)
+
+    unsafeRegisterLocations(locations)
   }
 
   @EventHandler

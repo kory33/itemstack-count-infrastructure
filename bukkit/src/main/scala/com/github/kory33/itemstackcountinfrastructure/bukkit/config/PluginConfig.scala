@@ -1,5 +1,6 @@
 package com.github.kory33.itemstackcountinfrastructure.bukkit.config
 
+import com.github.kory33.itemstackcountinfrastructure.infra.mysql.MysqlConnectionConfig
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.plugin.java.JavaPlugin
 

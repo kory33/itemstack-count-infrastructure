@@ -1,11 +1,11 @@
-package com.github.kory33.itemstackcountinfrastructure.bukkit.config
+package com.github.kory33.itemstackcountinfrastructure.infra.mysql
 
 import cats.effect.kernel.Async
 import doobie.util.transactor.Transactor
 
 case class MysqlConnectionConfig(mysqlUrl: String, username: String, password: String) {
 
-  import cats.implicits.given
+  import cats.implicits
 
   def transactor[F[_]: Async]: Transactor[F] =
     Transactor.fromDriverManager[F](

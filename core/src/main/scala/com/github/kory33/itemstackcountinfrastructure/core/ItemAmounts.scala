@@ -19,4 +19,4 @@ type ItemAmounts = Map[ItemStackTypeName, Int]
  * A data that asserts that, at some point in the past, the location `at` contained `amounts`
  * and nothing more.
  */
-case class ItemAmountsAtLocation(at: StorageLocation, amounts: ItemAmounts)
+case class ItemAmountsAtLocation(at: Location, amounts: ItemAmounts)

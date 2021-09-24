@@ -32,7 +32,7 @@ class CommandRecorderTest extends AnyFlatSpec {
           .map { i =>
             Command.ReportAmount(
               ItemAmountsAtLocation(
-                StorageLocation("world", 1, i, 0),
+                Location("world", 1, i, 0),
                 Map(ItemStackTypeName("item") -> i * 2)
               )
             )

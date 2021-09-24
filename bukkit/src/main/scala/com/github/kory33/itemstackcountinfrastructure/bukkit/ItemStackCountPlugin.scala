@@ -7,10 +7,7 @@ import com.github.kory33.itemstackcountinfrastructure.bukkit.algebra.concurrent.
   SleepBukkitTick
 }
 import com.github.kory33.itemstackcountinfrastructure.bukkit.algebra.inspection.InspectBukkitWorld
-import com.github.kory33.itemstackcountinfrastructure.bukkit.algebra.{
-  GetLoadedBukkitStorageLocations,
-  GetLoadedStorageLocations
-}
+import com.github.kory33.itemstackcountinfrastructure.bukkit.algebra.GetLoadedBukkitStorageLocations
 import com.github.kory33.itemstackcountinfrastructure.bukkit.config.PluginConfig
 import com.github.kory33.itemstackcountinfrastructure.core.algebra.InspectStorages
 import com.github.kory33.itemstackcountinfrastructure.core.{CommandRecorder, InspectionTargets}
@@ -19,7 +16,10 @@ import com.github.kory33.itemstackcountinfrastructure.minecraft.algebra.concurre
   OnMinecraftThread,
   SleepMinecraftTick
 }
-import com.github.kory33.itemstackcountinfrastructure.minecraft.plugin.inspection.InspectionProcess
+import com.github.kory33.itemstackcountinfrastructure.minecraft.plugin.inspection.{
+  GatherStorageLocations,
+  InspectionProcess
+}
 import doobie.util.transactor
 import doobie.util.transactor.Transactor
 import org.bukkit.Bukkit
@@ -50,7 +50,7 @@ class ItemStackCountPlugin extends JavaPlugin {
   private given inspectBukkitWorld: InspectStorages[IO] =
     InspectBukkitWorld[IO]
 
-  private given getLoadedBukkitStorageLocations: GetLoadedStorageLocations[IO] =
+  private given getLoadedBukkitStorageLocations: GatherStorageLocations[IO] =
     GetLoadedBukkitStorageLocations[IO]
 
   private var resourceFinalizer: Option[IO[Unit]] =

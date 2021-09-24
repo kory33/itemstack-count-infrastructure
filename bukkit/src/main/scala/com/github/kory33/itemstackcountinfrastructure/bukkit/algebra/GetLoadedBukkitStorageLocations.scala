@@ -1,15 +1,16 @@
 package com.github.kory33.itemstackcountinfrastructure.bukkit.algebra
 
 import cats.effect.SyncIO
-import com.github.kory33.itemstackcountinfrastructure.core.StorageLocation
+import com.github.kory33.itemstackcountinfrastructure.core.Location
 import com.github.kory33.itemstackcountinfrastructure.minecraft.algebra.concurrent.OnMinecraftThread
+import com.github.kory33.itemstackcountinfrastructure.minecraft.plugin.inspection.GatherStorageLocations
 import org.bukkit.{Bukkit, World}
 
 object GetLoadedBukkitStorageLocations {
 
-  def apply[F[_]: OnMinecraftThread]: GetLoadedStorageLocations[F] =
-    new GetLoadedStorageLocations[F] {
-      override def now: F[List[StorageLocation]] =
+  def apply[F[_]: OnMinecraftThread]: GatherStorageLocations[F] =
+    new GatherStorageLocations[F] {
+      override def now: F[List[Location]] =
         OnMinecraftThread[F].run(SyncIO {
           import scala.jdk.CollectionConverters.given
 
@@ -17,12 +18,7 @@ object GetLoadedBukkitStorageLocations {
             world <- Bukkit.getServer.getWorlds.asScala.toList
             chunks <- world.getLoadedChunks.toList
             tileEntity <- chunks.getTileEntities.toList
-          } yield StorageLocation(
-            world.getName,
-            tileEntity.getX,
-            tileEntity.getY,
-            tileEntity.getZ
-          )
+          } yield Location(world.getName, tileEntity.getX, tileEntity.getY, tileEntity.getZ)
         })
     }
 

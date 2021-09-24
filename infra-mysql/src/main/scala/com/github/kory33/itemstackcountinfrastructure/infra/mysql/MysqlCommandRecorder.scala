@@ -8,7 +8,7 @@ import com.github.kory33.itemstackcountinfrastructure.core.{
   Command,
   CommandRecorder,
   ItemAmountsAtLocation,
-  StorageLocation
+  Location
 }
 import com.github.kory33.itemstackcountinfrastructure.ext.ListExt
 import com.github.kory33.itemstackcountinfrastructure.util.BatchedQueue
@@ -38,7 +38,7 @@ object MysqlCommandRecorder {
       )
     """.update.run).sequence.void
 
-  private def clearRecordsAt(locations: List[StorageLocation]): ConnectionIO[Unit] =
+  private def clearRecordsAt(locations: List[Location]): ConnectionIO[Unit] =
     locations.traverse { location =>
       sql"""delete from
               item_stacks

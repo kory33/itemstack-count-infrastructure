@@ -8,7 +8,7 @@ import com.github.kory33.itemstackcountinfrastructure.core.{
   Command,
   CommandRecorder,
   InspectionTargets,
-  StorageLocation
+  Location
 }
 import com.github.kory33.itemstackcountinfrastructure.minecraft.algebra.concurrent.{
   OnMinecraftThread,

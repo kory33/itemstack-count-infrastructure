@@ -4,22 +4,22 @@ import com.github.kory33.itemstackcountinfrastructure.core.{
   Command,
   ItemAmounts,
   ItemAmountsAtLocation,
-  StorageLocation
+  Location
 }
 
 /**
- * Result of inspecting some [[StorageLocation]]. This is either `NoContainerFound` or `Found`
- * with contents of the storage described by [[ItemAmounts]].
+ * Result of inspecting some [[Location]]. This is either `NoContainerFound` or `Found` with
+ * contents of the storage described by [[ItemAmounts]].
  */
 enum LocationInspectionResult:
   case NoContainerFound
   case Found(amounts: ItemAmounts)
 
 /**
- * Result of inspecting some set of [[StorageLocation]]. This object can be converted to a
- * [[List]] of [[Command]]s that this system needs to send to the underlying persistence.
+ * Result of inspecting some set of [[Location]]. This object can be converted to a [[List]] of
+ * [[Command]]s that this system needs to send to the underlying persistence.
  */
-case class InspectionResult(results: Map[StorageLocation, ItemAmounts]) {
+case class InspectionResult(results: Map[Location, ItemAmounts]) {
 
   def toCommandsToRecord: List[Command] =
     results.toList.map {
@@ -31,12 +31,12 @@ case class InspectionResult(results: Map[StorageLocation, ItemAmounts]) {
 /**
  * Set of locations of storages to be inspected eventually.
  */
-case class InspectionTargets(targets: Set[StorageLocation]) {
+case class InspectionTargets(targets: Set[Location]) {
 
-  def addTarget(location: StorageLocation): InspectionTargets =
+  def addTarget(location: Location): InspectionTargets =
     this.copy(targets = targets.incl(location))
 
-  def addTargets(_targets: StorageLocation*): InspectionTargets =
+  def addTargets(_targets: Location*): InspectionTargets =
     this.copy(targets = targets.concat(_targets))
 
 }

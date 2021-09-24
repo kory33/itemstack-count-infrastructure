@@ -2,13 +2,13 @@ package com.github.kory33.itemstackcountinfrastructure.bukkit.command
 
 import cats.effect.IO
 import cats.effect.kernel.Ref
-import com.github.kory33.itemstackcountinfrastructure.bukkit.algebra.GetLoadedStorageLocations
 import com.github.kory33.itemstackcountinfrastructure.core.{
   Command,
   CommandRecorder,
   InspectionTargets
 }
-import org.bukkit.command.{Command => BCommand, CommandExecutor, CommandSender, TabExecutor}
+import com.github.kory33.itemstackcountinfrastructure.minecraft.plugin.inspection.GatherStorageLocations
+import org.bukkit.command.{CommandExecutor, CommandSender, TabExecutor, Command as BCommand}
 
 import java.util
 
@@ -16,7 +16,7 @@ class ItemStackCountCommand(
   targetRef: Ref[IO, InspectionTargets],
   recorder: CommandRecorder[IO]
 )(
-  using getLoadedStorageLocations: GetLoadedStorageLocations[IO],
+  using getLoadedStorageLocations: GatherStorageLocations[IO],
   ioRuntime: cats.effect.unsafe.IORuntime
 ) extends TabExecutor {
 

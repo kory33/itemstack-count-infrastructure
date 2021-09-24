@@ -8,7 +8,7 @@ import com.github.kory33.itemstackcountinfrastructure.core.{
   InspectionTargets,
   ItemAmounts,
   ItemStackTypeName,
-  StorageLocation
+  Location
 }
 import com.github.kory33.itemstackcountinfrastructure.minecraft.algebra.concurrent.OnMinecraftThread
 import org.bukkit.{Bukkit, Material}
@@ -22,7 +22,7 @@ object InspectBukkitWorld {
           targets.targets.toList.groupMap(_.worldName)(l => (l.x, l.y, l.z))
 
         OnMinecraftThread[F].run(SyncIO {
-          val listResult: Seq[(StorageLocation, ItemAmounts)] = for {
+          val listResult: Seq[(Location, ItemAmounts)] = for {
             (worldName, locs) <- worldGrouped.toList
             world <- Option.apply(Bukkit.getWorld(worldName)).toList
             (x, y, z) <- locs
@@ -52,7 +52,7 @@ object InspectBukkitWorld {
                 case None => Map.empty
               }
 
-            (StorageLocation(worldName, x, y, z), amounts)
+            (Location(worldName, x, y, z), amounts)
           }
 
           core.InspectionResult(listResult.toMap)

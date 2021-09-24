@@ -17,12 +17,6 @@ class CommandRecorderTest extends AnyFlatSpec {
           println(s"reportAmt: ${commands}")
           commands.traverse(queue.offer).void
 
-        override def queueReportNonExistenceCommand(
-          command: Command.ReportNonExistence
-        ): IO[Unit] =
-          println(s"reportNEx: ${command}")
-          queue.offer(command)
-
         override def queueDropRecordsCommand(command: Command.DropRecordsOn): IO[Unit] =
           println(s"drop: ${command}")
           queue.offer(command)
@@ -43,7 +37,7 @@ class CommandRecorderTest extends AnyFlatSpec {
               )
             )
           }
-          .appended(Command.ReportNonExistence(StorageLocation("world", 1, 0, 0)))
+          .appended(Command.DropRecordsOn("world"))
       )
     )
 

@@ -7,8 +7,17 @@ services:
     stdin_open: true
     ports:
       - "25565:25565"
+      - "7091:7091"
     environment:
-      JAVA_TOOL_OPTIONS: "-Xms1G -Xmx1G"
+      JAVA_TOOL_OPTIONS: >-
+        -Dcom.sun.management.jmxremote.local.only=false
+        -Dcom.sun.management.jmxremote.port=7091
+        -Dcom.sun.management.jmxremote.rmi.port=7091
+        -Dcom.sun.management.jmxremote.authenticate=false
+        -Dcom.sun.management.jmxremote.ssl=false
+        -Dcom.sun.management.jmxremote.host=0.0.0.0
+        -Djava.rmi.server.hostname=localhost
+        -Xms1G -Xmx1G
     volumes:
       - ./data:/app
       - ../bukkit/target/build/itemstack-count.jar:/app/plugins/itemstack-count.jar:ro

@@ -35,7 +35,7 @@ object InspectionProcess {
       _ <- recorder.queue.queueList(result.toCommandsToRecord)
     } yield ()
 
-  def apply[F[_]: OnMinecraftThread: SleepMinecraftTick: Concurrent: InspectStorages](
+  def apply[F[_]: OnMinecraftThread: SleepMinecraftTick: Spawn: Ref.Make: InspectStorages](
     recorder: CommandRecorder[F]
   ): Resource[F, InspectionProcess[F]] =
     for {

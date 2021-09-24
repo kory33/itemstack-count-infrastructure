@@ -16,7 +16,6 @@ import scala.collection.immutable.Queue
  */
 enum Command:
   case ReportAmount(record: ItemAmountsAtLocation)
-  case ReportNonExistence(at: StorageLocation)
   case DropRecordsOn(worldName: String)
 
 /**
@@ -38,8 +37,6 @@ object CommandRecorder {
         elem match {
           case elem: Command.ReportAmount =>
             queueReportAmountCommands(List(elem))
-          case elem: Command.ReportNonExistence =>
-            queueReportNonExistenceCommand(elem)
           case elem: Command.DropRecordsOn =>
             queueDropRecordsCommand(elem)
         }
@@ -57,9 +54,6 @@ object CommandRecorder {
                 ListExt
                   .spanTypeTestState[Command, Command.ReportAmount]
                   .map(queueReportAmountCommands),
-                ListExt
-                  .spanTypeTestState[Command, Command.ReportNonExistence]
-                  .map(_.traverse(queueReportNonExistenceCommand).void),
                 ListExt
                   .spanTypeTestState[Command, Command.DropRecordsOn]
                   .map(_.traverse(queueDropRecordsCommand).void)

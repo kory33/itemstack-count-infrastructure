@@ -19,17 +19,11 @@ enum LocationInspectionResult:
  * Result of inspecting some set of [[StorageLocation]]. This object can be converted to a
  * [[List]] of [[Command]]s that this system needs to send to the underlying persistence.
  */
-case class InspectionResult(results: Map[StorageLocation, LocationInspectionResult]) {
+case class InspectionResult(results: Map[StorageLocation, ItemAmounts]) {
 
   def toCommandsToRecord: List[Command] =
     results.toList.map {
-      case (location, result) =>
-        result match {
-          case LocationInspectionResult.NoContainerFound =>
-            Command.ReportNonExistence(location)
-          case LocationInspectionResult.Found(amounts) =>
-            Command.ReportAmount(ItemAmountsAtLocation(location, amounts))
-        }
+      case (location, result) => Command.ReportAmount(ItemAmountsAtLocation(location, result))
     }
 
 }

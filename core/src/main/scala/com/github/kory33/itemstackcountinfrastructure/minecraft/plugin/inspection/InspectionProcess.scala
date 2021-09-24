@@ -27,33 +27,35 @@ object InspectionProcess {
 
   import cats.implicits.given
 
-  private def inspectAndQueueCommands[F[_]: OnMinecraftThread: Monad: InspectStorages](
-    recorder: CommandRecorder[F]
-  )(inspectionTargets: InspectionTargets): F[Unit] =
-    for {
-      result <- InspectStorages[F].at(inspectionTargets)
-      _ <- recorder.queue.queueList(result.toCommandsToRecord)
-    } yield ()
+  private def uncancellablyComsumeQueue[F[_]: MonadCancelThrow: InspectStorages](
+    targetRef: Ref[F, InspectionTargets]
+  )(recorder: CommandRecorder[F]): F[Unit] =
+    MonadCancel[F, Throwable].uncancelable { _ =>
+      targetRef
+        .getAndSet(InspectionTargets.empty)
+        .flatMap(InspectStorages[F].at)
+        .map(_.toCommandsToRecord)
+        .flatMap(recorder.queue.queueList)
+    }
 
-  def apply[F[_]: OnMinecraftThread: SleepMinecraftTick: Spawn: Ref.Make: InspectStorages](
+  /**
+   * Construct a process that exposes [[InspectionProcessData]] whose contents will be
+   * periodically (with period of 2 ticks) consumed by a process that runs [[InspectStorages]]
+   * and send the result to the given `recorder`.
+   *
+   * When the resource is closed, it is guaranteed that whatever has been added to the exposed
+   * [[InspectionTargets]] will be consumed by inspect-and-record process.
+   */
+  def apply[F[_]: Spawn: Ref.Make: SleepMinecraftTick: InspectStorages](
     recorder: CommandRecorder[F]
   ): Resource[F, InspectionProcessData[F]] =
     for {
       targetRef <- Resource.make(Ref[F].of(InspectionTargets.apply(Set.empty)))(ref =>
-        for {
-          targetsToFinalize <- ref.get
-          _ <- inspectAndQueueCommands(recorder)(targetsToFinalize)
-        } yield ()
+        uncancellablyComsumeQueue(ref)(recorder)
       )
       _ <- GenSpawn[F, Throwable].background {
         Monad[F].foreverM {
-          MonadCancel[F, Throwable].uncancelable { poll =>
-            for {
-              _ <- poll(SleepMinecraftTick[F].sleepFor(2))
-              inspectionTargets <- targetRef.getAndSet(InspectionTargets.empty)
-              _ <- inspectAndQueueCommands(recorder)(inspectionTargets)
-            } yield ()
-          }
+          SleepMinecraftTick[F].sleepFor(2) >> uncancellablyComsumeQueue(targetRef)(recorder)
         }
       }
     } yield new InspectionProcessData(targetRef)

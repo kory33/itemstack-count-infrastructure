@@ -21,42 +21,48 @@ import com.github.kory33.itemstackcountinfrastructure.util.BatchedQueue
  *   - remember where to eventually inspect
  *   - run the inspection, and send the result to [[BatchedQueue]].
  */
-class InspectionProcessData[F[_]] private[inspection] (val targets: Ref[F, InspectionTargets])
+class InspectionProcess[F[_]: MonadCancelThrow: InspectStorages] private[inspection] (
+  val targets: Ref[F, InspectionTargets],
+  recorder: CommandRecorder[F]
+) {
+  private[inspection] val uncancellablyConsumeQueue: F[Unit] = {
+    import cats.implicits.given
 
-object InspectionProcess {
-
-  import cats.implicits.given
-
-  private def uncancellablyComsumeQueue[F[_]: MonadCancelThrow: InspectStorages](
-    targetRef: Ref[F, InspectionTargets]
-  )(recorder: CommandRecorder[F]): F[Unit] =
     MonadCancel[F, Throwable].uncancelable { _ =>
-      targetRef
+      targets
         .getAndSet(InspectionTargets.empty)
         .flatMap(InspectStorages[F].at)
         .map(_.toCommandsToRecord)
         .flatMap(recorder.queueList)
     }
+  }
+}
+
+object InspectionProcess {
 
   /**
-   * Construct a process that exposes [[InspectionProcessData]] whose contents will be
-   * periodically (with period of 2 ticks) consumed by a process that runs [[InspectStorages]]
-   * and send the result to the given `recorder`.
+   * Construct a process that exposes [[InspectionProcess]] whose contents will be periodically
+   * (with period of 2 ticks) consumed by [[InspectStorages]] with its results sent to the given
+   * `recorder`.
    *
    * When the resource is closed, it is guaranteed that whatever has been added to the exposed
-   * [[InspectionTargets]] will be consumed by inspect-and-record process.
+   * [[InspectionTargets]] will be consumed.
    */
   def apply[F[_]: Spawn: Ref.Make: SleepMinecraftTick: InspectStorages](
     recorder: CommandRecorder[F]
-  ): Resource[F, InspectionProcessData[F]] =
+  ): Resource[F, InspectionProcess[F]] = {
+    import cats.implicits.given
+
     for {
-      targetRef <- Resource.make(Ref[F].of(InspectionTargets.apply(Set.empty)))(ref =>
-        uncancellablyComsumeQueue(ref)(recorder)
-      )
+      process <- Resource.make(
+        Ref[F].of(InspectionTargets.apply(Set.empty)).map(new InspectionProcess(_, recorder))
+      )(_.uncancellablyConsumeQueue)
+
       _ <- GenSpawn[F, Throwable].background {
         Monad[F].foreverM {
-          SleepMinecraftTick[F].sleepFor(2) >> uncancellablyComsumeQueue(targetRef)(recorder)
+          SleepMinecraftTick[F].sleepFor(2) >> process.uncancellablyConsumeQueue
         }
       }
-    } yield new InspectionProcessData(targetRef)
+    } yield process
+  }
 }

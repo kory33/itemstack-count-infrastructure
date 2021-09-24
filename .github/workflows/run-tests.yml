@@ -5,11 +5,10 @@ name: Run cached tests
 on:
   push:
     branches:
-      - develop
       - master
   pull_request:
     branches:
-      - develop
+      - master
 
 jobs:
   build_test_and_upload:

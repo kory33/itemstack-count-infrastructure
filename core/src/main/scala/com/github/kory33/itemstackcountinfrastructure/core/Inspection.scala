@@ -8,14 +8,6 @@ import com.github.kory33.itemstackcountinfrastructure.core.{
 }
 
 /**
- * Result of inspecting some [[Location]]. This is either `NoContainerFound` or `Found` with
- * contents of the storage described by [[ItemAmounts]].
- */
-enum LocationInspectionResult:
-  case NoContainerFound
-  case Found(amounts: ItemAmounts)
-
-/**
  * Result of inspecting some set of [[Location]]. This object can be converted to a [[List]] of
  * [[Command]]s that this system needs to send to the underlying persistence.
  */

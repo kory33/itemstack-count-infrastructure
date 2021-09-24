@@ -21,7 +21,7 @@ import com.github.kory33.itemstackcountinfrastructure.util.BatchedQueue
  *   - remember where to eventually inspect
  *   - run the inspection, and send the result to [[BatchedQueue]].
  */
-class InspectionProcess[F[_]] private (val targets: Ref[F, InspectionTargets])
+class InspectionProcessData[F[_]] private[inspection] (val targets: Ref[F, InspectionTargets])
 
 object InspectionProcess {
 
@@ -37,7 +37,7 @@ object InspectionProcess {
 
   def apply[F[_]: OnMinecraftThread: SleepMinecraftTick: Spawn: Ref.Make: InspectStorages](
     recorder: CommandRecorder[F]
-  ): Resource[F, InspectionProcess[F]] =
+  ): Resource[F, InspectionProcessData[F]] =
     for {
       targetRef <- Resource.make(Ref[F].of(InspectionTargets.apply(Set.empty)))(ref =>
         for {
@@ -56,5 +56,5 @@ object InspectionProcess {
           }
         }
       }
-    } yield new InspectionProcess(targetRef)
+    } yield new InspectionProcessData(targetRef)
 }

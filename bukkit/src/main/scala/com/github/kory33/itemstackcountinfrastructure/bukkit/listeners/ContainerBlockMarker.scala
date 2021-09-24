@@ -27,13 +27,13 @@ class ContainerBlockMarker(targetRef: Ref[IO, InspectionTargets])(
   private def unsafeRegisterBlock(blocks: Block*): Unit = {
     targetRef
       .update(_.addTargets(blocks.map(StorageLocationFromBukkit.block): _*))
-      .unsafeRunAndForget()
+      .unsafeRunSync()
   }
 
   private def unsafeTryRegisterInventoryOwners(inventories: Inventory*): Unit = {
     targetRef
       .update(_.addTargets(StorageLocationFromBukkit.inventories(inventories: _*): _*))
-      .unsafeRunAndForget()
+      .unsafeRunSync()
   }
 
   @EventHandler

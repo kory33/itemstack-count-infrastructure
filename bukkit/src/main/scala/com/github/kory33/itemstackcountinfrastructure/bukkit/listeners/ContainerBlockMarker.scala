@@ -24,22 +24,16 @@ class ContainerBlockMarker(targetRef: Ref[IO, InspectionTargets])(
   using ioRuntime: cats.effect.unsafe.IORuntime
 ) extends Listener {
 
-  private def unsafeRegisterBlock(block: Block): Unit = {
-    targetRef.update(_.addTarget(StorageLocationFromBukkit.block(block))).unsafeRunAndForget()
+  private def unsafeRegisterBlock(blocks: Block*): Unit = {
+    targetRef
+      .update(_.addTargets(blocks.map(StorageLocationFromBukkit.block): _*))
+      .unsafeRunAndForget()
   }
 
-  private def unsafeTryRegisterInventoryOwner(inventory: Inventory): Unit = {
-    def unsafeTryRegisterInventoryHolder(holder: InventoryHolder): Unit = {
-      holder match {
-        case dc: DoubleChest =>
-          unsafeTryRegisterInventoryHolder(dc.getLeftSide)
-          unsafeTryRegisterInventoryHolder(dc.getRightSide)
-        case c: Container => unsafeRegisterBlock(c.getBlock)
-        case _            =>
-      }
-    }
-
-    unsafeTryRegisterInventoryHolder(inventory.getHolder)
+  private def unsafeTryRegisterInventoryOwners(inventories: Inventory*): Unit = {
+    targetRef
+      .update(_.addTargets(StorageLocationFromBukkit.inventories(inventories: _*): _*))
+      .unsafeRunAndForget()
   }
 
   @EventHandler
@@ -59,23 +53,21 @@ class ContainerBlockMarker(targetRef: Ref[IO, InspectionTargets])(
 
   @EventHandler
   def onInventoryItemMoveTried(event: InventoryMoveItemEvent): Unit = {
-    unsafeTryRegisterInventoryOwner(event.getSource)
-    unsafeTryRegisterInventoryOwner(event.getInitiator)
-    unsafeTryRegisterInventoryOwner(event.getDestination)
+    unsafeTryRegisterInventoryOwners(event.getSource, event.getInitiator, event.getDestination)
   }
 
   @EventHandler
   def onInventoryAccess(event: InventoryOpenEvent): Unit = {
-    unsafeTryRegisterInventoryOwner(event.getInventory)
+    unsafeTryRegisterInventoryOwners(event.getInventory)
   }
 
   @EventHandler
   def onInventoryModify(event: InventoryClickEvent): Unit = {
-    unsafeTryRegisterInventoryOwner(event.getInventory)
+    unsafeTryRegisterInventoryOwners(event.getInventory)
   }
 
   @EventHandler
   def onInventoryClose(event: InventoryCloseEvent): Unit = {
-    unsafeTryRegisterInventoryOwner(event.getInventory)
+    unsafeTryRegisterInventoryOwners(event.getInventory)
   }
 }

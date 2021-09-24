@@ -14,11 +14,17 @@ object GetLoadedBukkitStorageLocations {
         OnMinecraftThread[F].run(SyncIO {
           import scala.jdk.CollectionConverters.given
 
-          for {
-            world <- Bukkit.getServer.getWorlds.asScala.toList
-            chunks <- world.getLoadedChunks.toList
-            tileEntity <- chunks.getTileEntities.toList
-          } yield Location(world.getName, tileEntity.getX, tileEntity.getY, tileEntity.getZ)
+          try {
+            for {
+              world <- Bukkit.getServer.getWorlds.asScala.toList
+              chunks <- world.getLoadedChunks.toList
+              tileEntity <- chunks.getTileEntities.toList
+            } yield Location(world.getName, tileEntity.getX, tileEntity.getY, tileEntity.getZ)
+          } catch (e: Throwable) => {
+            e.printStackTrace()
+            // we can't really recover otherwise
+            List()
+          }
         })
     }
 

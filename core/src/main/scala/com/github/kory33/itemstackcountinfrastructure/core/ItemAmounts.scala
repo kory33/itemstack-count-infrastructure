@@ -16,7 +16,7 @@ extension (itemStackName: ItemStackTypeName) inline def asNormalString: String =
 type ItemAmounts = Map[ItemStackTypeName, Int]
 
 /**
- * A data that asserts that, at some point in the past, items with amounts of `amounts` have
- * been found at `at`.
+ * A data that asserts that, at some point in the past, the location `at` contained `amounts`
+ * and nothing more.
  */
 case class ItemAmountsAtLocation(at: StorageLocation, amounts: ItemAmounts)

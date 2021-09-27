@@ -8,6 +8,7 @@ import com.github.kory33.itemstackcountinfrastructure.bukkit.algebra.concurrent.
   SleepBukkitTick
 }
 import com.github.kory33.itemstackcountinfrastructure.bukkit.algebra.inspection.InspectBukkitWorld
+import com.github.kory33.itemstackcountinfrastructure.bukkit.concurrent.unsafe.BatchedEffectQueue
 import com.github.kory33.itemstackcountinfrastructure.bukkit.config.PluginConfig
 import com.github.kory33.itemstackcountinfrastructure.core.algebra.InspectStorages
 import com.github.kory33.itemstackcountinfrastructure.core.{CommandRecorder, InspectionTargets}
@@ -66,11 +67,11 @@ class ItemStackCountPlugin extends JavaPlugin {
 
         inspectionProcess <- InspectionProcess(recorder)
 
+        effectQueue <- BatchedEffectQueue[IO]
+
         _ <- listenerResource[IO](
           this,
-          listeners.ContainerBlockMarker(inspectionProcess.targets)(
-            using concurrent.unsafe.BukkitIORuntime()
-          )
+          listeners.ContainerBlockMarker(inspectionProcess.targets)(effectQueue)
         )
         _ <- Resource.eval(IO {
           this

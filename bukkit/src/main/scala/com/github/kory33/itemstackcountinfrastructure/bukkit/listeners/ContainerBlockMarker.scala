@@ -2,6 +2,7 @@ package com.github.kory33.itemstackcountinfrastructure.bukkit.listeners
 
 import cats.effect.IO
 import cats.effect.kernel.Ref
+import cats.effect.std.Dispatcher
 import com.github.kory33.itemstackcountinfrastructure.bukkit.adapter.StorageLocationFromBukkit
 import com.github.kory33.itemstackcountinfrastructure.core.{InspectionTargets, Location}
 import org.bukkit.block.{Block, Container, DoubleChest}
@@ -24,19 +25,19 @@ class ContainerBlockMarker(targetRef: Ref[IO, InspectionTargets])(
   using ioRuntime: cats.effect.unsafe.IORuntime
 ) extends Listener {
 
-  private def unsafeRegisterLocations(locations: Seq[Location]): Unit = {
+  private def unsafeRegisterLazyLocations(locations: => Seq[Location]): Unit = {
     targetRef.update(_.addTargets(locations: _*)).unsafeRunAndForget()
   }
 
   private def unsafeRegisterBlock(blocks: Block*): Unit = {
-    unsafeRegisterLocations(blocks.map(StorageLocationFromBukkit.block))
+    // strictly evaluate here on server thread
+    val locations = blocks.map(StorageLocationFromBukkit.block)
+    unsafeRegisterLazyLocations(locations)
   }
 
   private def unsafeTryRegisterInventoryOwners(inventories: Inventory*): Unit = {
-    // compute on server thread because accessing inventory on unsafeRunSync will result in an error
-    val locations = StorageLocationFromBukkit.inventories(inventories: _*)
-
-    unsafeRegisterLocations(locations)
+    // inventory => location can be invoked on non-server threads, we just can't wait for the result here
+    unsafeRegisterLazyLocations(StorageLocationFromBukkit.inventories(inventories: _*))
   }
 
   @EventHandler

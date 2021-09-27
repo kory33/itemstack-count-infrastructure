@@ -14,8 +14,15 @@ object StorageLocationFromBukkit {
     location(block.getLocation)
 
   /**
-   * Get location of container holders of inventories. This method is not thread-safe and must
-   * be called from the server thread.
+   * Get location of container holders of inventories.
+   *
+   * This may be invoked on non-server threads, but will await some results from main thread so
+   * if
+   *   - this function is suspended in an effect
+   *   - the effect is run on non-server thread
+   *   - the result is awaited on main thread
+   *
+   * then the server will deadlock.
    */
   def inventories(invs: Inventory*): List[Location] =
     invs

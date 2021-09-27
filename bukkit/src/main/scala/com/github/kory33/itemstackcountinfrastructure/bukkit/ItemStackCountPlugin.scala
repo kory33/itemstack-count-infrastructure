@@ -68,7 +68,9 @@ class ItemStackCountPlugin extends JavaPlugin {
 
         _ <- listenerResource[IO](
           this,
-          listeners.ContainerBlockMarker(inspectionProcess.targets)
+          listeners.ContainerBlockMarker(inspectionProcess.targets)(
+            using concurrent.unsafe.BukkitIORuntime()
+          )
         )
         _ <- Resource.eval(IO {
           this

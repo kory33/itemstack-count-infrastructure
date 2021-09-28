@@ -1,7 +1,7 @@
 import sbt.Compile
 import sbt.Keys.baseDirectory
 
-ThisBuild / version := "0.1.8"
+ThisBuild / version := "0.1.9"
 
 ThisBuild / scalaVersion := "3.0.2"
 

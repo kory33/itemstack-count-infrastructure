@@ -8,6 +8,22 @@ import com.github.kory33.itemstackcountinfrastructure.minecraft.algebra.concurre
 import java.util.concurrent.atomic.AtomicReference
 import scala.collection.immutable.Queue
 
+/**
+ * A queue of effects (in context of [[F]]) that will eventually be run.
+ *
+ * The purpose of this object is to allow fast queueing of effects which cannot be achieved
+ * using default runtime of [[cats.effect.IO]]. When we use [[cats.effect.std.Dispatcher]], we
+ * will end up invoking an async callback to awake parked threads, which is normally costly (10
+ * ~ 100us). If we use [[cats.effect.IO.unsafeRunAndForget()]], this will submit Runnables to an
+ * [[scala.concurrent.ExecutionContext]], but this too takes similar amount of time.
+ *
+ * This object is useful if we wish to submit some effect with minimal latency for later
+ * execution. So consider using this if:
+ *   - the effect happens often within a short period of time
+ *   - we don't want to consume effect-producer's thread time
+ *   - that is required to complete eventually, not necessarily on the very moment the effect
+ *     was created
+ */
 class BatchedEffectQueue[F[_]] private (queue: AtomicReference[Queue[F[Any]]]) {
 
   def unsafeAddEffectToQueue[U](effect: F[U])(using F: Functor[F]): Unit = {
@@ -19,6 +35,10 @@ class BatchedEffectQueue[F[_]] private (queue: AtomicReference[Queue[F[Any]]]) {
 
 object BatchedEffectQueue {
 
+  /**
+   * Build a [[BatchedEffectQueue]] that will run submitted queue of effects once a Minecraft
+   * tick. When the resource is closed, all the queued tasks will be evaluated.
+   */
   def apply[F[_]: SleepMinecraftTick: Sync: Spawn]: Resource[F, BatchedEffectQueue[F]] = {
     {
       import cats.implicits.given

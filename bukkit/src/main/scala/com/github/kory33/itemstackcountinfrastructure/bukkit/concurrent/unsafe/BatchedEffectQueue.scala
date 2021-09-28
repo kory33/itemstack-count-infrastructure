@@ -1,8 +1,8 @@
 package com.github.kory33.itemstackcountinfrastructure.bukkit.concurrent.unsafe
 
-import cats.{Functor, Monad}
 import cats.effect.IO
 import cats.effect.kernel.{Async, GenSpawn, Resource, Spawn, Sync}
+import cats.{Functor, Monad}
 import com.github.kory33.itemstackcountinfrastructure.minecraft.algebra.concurrent.SleepMinecraftTick
 
 import java.util.concurrent.atomic.AtomicReference
